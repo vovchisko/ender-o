@@ -161,13 +161,17 @@ class Journal extends EE3 {
 
     const caret_num = _jnum(jfiles.find(fn => fn.includes('.01.')))
 
-    logger.log('journal caret:', caret_num)
+    settings.state.last_journal = caret_num
+    settings.state.last_record = -1
+
+    logger.log('journal caret:', caret_num, 'rec: ', -1)
 
     jfiles.forEach(fname => {
       if (caret_num > _jnum(fname)) {
         this.files[fname].changed = caret_num <= _jnum(fname)
       }
     })
+
   }
 
   get_last_journal () {

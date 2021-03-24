@@ -1,1 +1,12 @@
-button { }
+button {
+  background: transparent;
+  color: var(--ui-color-fg, orange);
+  text-transform: uppercase;
+  padding: 0.5em 1em;
+  border: var(--ui-border-w, 1px) solid var(--ui-color-fg, orange);
+
+  &.active {
+    background: rgba(255, 128, 0, .1);
+    color: yellow;
+  }
+}

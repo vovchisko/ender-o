@@ -2,19 +2,27 @@
   <h3>DEV TOOLS</h3>
 
   <div class="cols">
-    <div class="column">
-      <b class="caps">DATA</b>
-      <div v-for="e in data">
-        <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{ e.event }}</pre>
-        <pre v-if="e.expanded">{{ e.rec }}</pre>
+    <div class="col">
+      <div class="block">
+        <b class="caps">DATA</b>
+        <div v-for="e in data">
+          <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{ e.event }}</pre>
+          <pre v-if="e.expanded">{{ e.rec }}</pre>
+        </div>
+      </div>
+
+      <div class="block">
+        <b class="caps">JOURNAL</b>
+        <div v-for="e in records">
+          <pre @click="e.expanded = !e.expanded">{{ rec_t(e.rec.timestamp) }} :: {{ e.event }}</pre>
+          <pre v-if="e.expanded">{{ e.rec }}</pre>
+        </div>
       </div>
     </div>
-
-    <div class="column">
-      <b class="caps">JOURNAL</b>
-      <div v-for="e in records">
-        <pre @click="e.expanded = !e.expanded">{{ rec_t(e.rec.timestamp) }} :: {{ e.event }}</pre>
-        <pre v-if="e.expanded">{{ e.rec }}</pre>
+    <div class="col">
+      <div class="block">
+        <b class="caps">COMPUETD STATUS</b>
+        <pre>{{ status }}</pre>
       </div>
     </div>
   </div>
@@ -40,8 +48,13 @@ export default {
     })
 
     J.on('data', (event, rec) => {
-      data[event] = { event, rec, expanded: false, id: event }
+      if (!data[event]) {
+        data[event] = { event, rec, expanded: false, id: event }
+      } else {
+        data[event].rec = rec
+      }
     })
+
     return { status, records, data, ui, rec_t, rec_dt }
   },
 }
@@ -51,18 +64,23 @@ export default {
   font-size: 1.1vh;
   text-shadow: 0 0 2px black;
   color: orange;
+  display: flex;
+  justify-content: space-between;
+
+  .col {
+
+  }
 
   pre {
     margin: 0;
-    padding: 1em;
+    padding: 0.1em;
   }
 
-  .column {
+  .block {
     @include scrollbar-awesome();
 
     margin: 1em;
     overflow: auto;
-    max-height: 50vh;
 
     b { font-size: 1.2em; }
   }

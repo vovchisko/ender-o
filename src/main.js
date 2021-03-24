@@ -10,6 +10,9 @@ import { ui } from '@/state/ui'
 
 require('@/assets/fonts/eurocaps.css')
 require('@/assets/fonts/titillium-web.css')
+require('@/styles/vars.scss')
+require('@/styles/root.scss')
+require('@/styles/main.scss')
 
 const stop_and_save = () => {
   window.removeEventListener('beforeunload', stop_and_save)

@@ -65,7 +65,6 @@ export const LEGAL_STATE = {
 }
 
 export const status = reactive({
-  _raw: null,
   updated: new Date(0),
   legal_state: LEGAL_STATE.CLEAN,
   fire_group: 0,
@@ -74,13 +73,23 @@ export const status = reactive({
   lat: 0,
   alt: 0,
   heading: 0,
-  body: '',
-  planet_r: 0,
   fuel: 0,
   fuel_reservouir: 0,
   cargo: 0,
   pips: [ 0, 0, 0 ],
-  flags: {
+  pos: {
+    updated: new Date(),
+    system_addr: null,
+    system: '',
+    body: '',
+    body_r: 0,
+    body_id: null,
+    lat: 0,
+    lon: 0,
+    alt: 0,
+    heading: 0,
+  },
+  is: {
     Docked: 0,                        // 0     1               Docked, (on a landing pad)
     Landed: 0,                        // 1     2               Landed, (on planet surface)
     LandingGearRetracted: 0,          // 2     4               Landing Gear Down
@@ -119,8 +128,6 @@ export const status = reactive({
 export function status_init () {
   J.on('Status', (raw) => {
     if (!raw) return
-    status._raw = raw
-    status.updated = new Date(raw.timestamp)
     status.legal_state = get(raw, 'LegalState', LEGAL_STATE.CLEAN)
     status.fire_group = get(raw, 'FireGroup', 0)
     status.gui_focus = get(raw, 'GuiFocus', 0)
@@ -128,31 +135,57 @@ export function status_init () {
     status.fuel_reservouir = get(raw, 'Fuel.FuelReservoir', 0)
     status.cargo = get(raw, 'Cargo', 0)
     status.pips = get(raw, 'Pips', [ 0, 0, 0 ])
-    status.lat = get(raw, 'Latitude', 0)
-    status.lon = get(raw, 'Longitude', 0)
-    status.alt = get(raw, 'Altitude', 0)
-    status.heading = get(raw, 'Heading', 0)
-    status.body_name = get(raw, 'BodyName', '')
-    status.body_r = get(raw, 'PlanetRadius', 0)
+
+    status.pos.lat = get(raw, 'Latitude', 0)
+    status.pos.lon = get(raw, 'Longitude', 0)
+    status.pos.alt = get(raw, 'Altitude', 0)
+    status.pos.heading = get(raw, 'Heading', 0)
+    status.pos.body = get(raw, 'BodyName', '') // ? conflicts
+    status.pos.body_r = get(raw, 'PlanetRadius', 0) // ?
 
     raw.Flags.toString(2).padStart(32, '0')
         .split('')
         .reverse()
         .map(bit => Boolean(Number(bit || 0)))
         .forEach((f, i) => {
-          if (status.flags[STATUS_FLAGS_MAP[i]] !== f) status.flags[STATUS_FLAGS_MAP[i]] = f
+          if (status.is[STATUS_FLAGS_MAP[i]] !== f) status.is[STATUS_FLAGS_MAP[i]] = f
         })
 
     logger.log('updated')
   })
+
+  J.on('LeaveBody', () => {
+    status.pos.body_id = null
+    status.pos.body = ''
+  })
+
+  J.on('ApproachBody', () => {
+    status.pos.body_id = null
+    status.pos.body = ''
+  })
 }
 
 
-
-
-
-
-
+/**
+ 22:55:19 :: LeaveBody
+ {
+  "timestamp": "2021-03-24T20:55:19Z",
+  "event": "LeaveBody",
+  "StarSystem": "Redonesses",
+  "SystemAddress": 3107442528962,
+  "Body": "Redonesses A 1",
+  "BodyID": 7
+}
+ 22:54:11 :: ApproachBody
+ {
+  "timestamp": "2021-03-24T20:54:11Z",
+  "event": "ApproachBody",
+  "StarSystem": "Redonesses",
+  "SystemAddress": 3107442528962,
+  "Body": "Redonesses A 1",
+  "BodyID": 7
+}
+ */
 
 
 
