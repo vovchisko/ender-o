@@ -21,11 +21,11 @@
 </template>
 
 <script>
-import { status }   from '@/state/status'
-import { J }        from '@/modules/journal'
-import { reactive } from 'vue'
-import { ui }       from '@/state/ui'
-import { rec_t, rec_dt } from '@/helpers/date_formaters'
+import { status }        from '@/state/status'
+import { J }             from '@/modules/journal'
+import { reactive }      from 'vue'
+import { ui }            from '@/state/ui'
+import { rec_dt, rec_t } from '@/helpers/date_formaters'
 
 export default {
   name: 'development',
@@ -54,7 +54,7 @@ export default {
 
   pre {
     margin: 0;
-    backdrop-filter: blur(1px);
+    padding: 1em;
   }
 
   .column {
