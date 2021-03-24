@@ -1,0 +1,45 @@
+{
+  "name": "ender-o",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Vladimir Ishchenko",
+  "description": "Ender Observer: Overlay App for Elite Dangerous",
+  "scripts": {
+    "vue:serve": "vue-cli-service serve",
+    "vue:build": "vue-cli-service build",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:release": "npm run electron:build -- -p always",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
+    "serve": "vue-cli-service electron:serve",
+    "build": "npm run electron:build",
+    "release": "npm run electron:release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vovchisko/ender-o.git"
+  },
+  "main": "background.js",
+  "dependencies": {
+    "a-signal": "^2.0.2",
+    "core-js": "^3.6.5",
+    "electron-overlay-window": "^1.0.4",
+    "electron-updater": "^4.3.8",
+    "eventemitter3": "^4.0.7",
+    "lodash": "^4.17.21",
+    "register-service-worker": "^1.7.1",
+    "vue": "^3.0.0",
+    "wse": "^2.0.4"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-pwa": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "electron": "^11.0.0",
+    "electron-devtools-installer": "^3.1.0",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "vue-cli-plugin-electron-builder": "~2.0.0-rc.6"
+  }
+}
