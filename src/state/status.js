@@ -5,6 +5,8 @@ import get               from 'lodash/get'
 
 const logger = create_logger('status', { bg: 'grey', text: 'white' })
 
+let _last_raw = {}
+
 export const STATUS_FLAGS_MAP = [
   'Docked',
   'Landed',
@@ -41,8 +43,8 @@ export const STATUS_FLAGS_MAP = [
 ]
 export const GUI_FOCUS = {
   NO_FOCUS: 0,    // NoFocus
-  RIGHT: 1,       // InternalPanel (right hand side)
-  LEFT: 2,        // ExternalPanel (left hand side)
+  INT_RIGHT: 1,   // InternalPanel (right hand side)
+  EXT_LEFT: 2,    // ExternalPanel (left hand side)
   COMM: 3,        // CommsPanel (top)
   ROLE: 4,        // RolePanel (bottom)
   STATION: 5,     // StationServices
@@ -53,7 +55,13 @@ export const GUI_FOCUS = {
   SSA: 10,        // SAA mode
   CODEX: 11,      // Codex
 }
-
+export const TRANSPORT_TYPE = {
+  UNKNOWN: '',
+  LEGS: 'LEGS',
+  SRV: 'SRV',
+  FIGHTER: 'FIGHTER',
+  SHIP: 'SHIP',
+}
 export const LEGAL_STATE = {
   CLEAN: 'Clean',
   ILLEGAL_CARGO: 'IllegalCargo',
@@ -65,31 +73,31 @@ export const LEGAL_STATE = {
 }
 
 export const status = reactive({
-  updated: new Date(0),
+  updated: '',
+  cmdr: {
+    name: '',
+    FID: '',
+  },
   legal_state: LEGAL_STATE.CLEAN,
   fire_group: 0,
   gui_focus: GUI_FOCUS.NO_FOCUS,
-  lon: 0,
-  lat: 0,
-  alt: 0,
-  heading: 0,
   fuel: 0,
   fuel_reservouir: 0,
   cargo: 0,
   pips: [ 0, 0, 0 ],
+  transport: TRANSPORT_TYPE.UNKNOWN,
   pos: {
-    updated: new Date(),
     system_addr: null,
     system: '',
     body: '',
     body_r: 0,
-    body_id: null,
+    body_id: 0,
     lat: 0,
     lon: 0,
     alt: 0,
     heading: 0,
   },
-  is: {
+  flags: {
     Docked: 0,                        // 0     1               Docked, (on a landing pad)
     Landed: 0,                        // 1     2               Landed, (on planet surface)
     LandingGearRetracted: 0,          // 2     4               Landing Gear Down
@@ -128,6 +136,8 @@ export const status = reactive({
 export function status_init () {
   J.on('Status', (raw) => {
     if (!raw) return
+    status.updated = raw.timestamp
+
     status.legal_state = get(raw, 'LegalState', LEGAL_STATE.CLEAN)
     status.fire_group = get(raw, 'FireGroup', 0)
     status.gui_focus = get(raw, 'GuiFocus', 0)
@@ -143,49 +153,46 @@ export function status_init () {
     status.pos.body = get(raw, 'BodyName', '') // ? conflicts
     status.pos.body_r = get(raw, 'PlanetRadius', 0) // ?
 
-    raw.Flags.toString(2).padStart(32, '0')
-        .split('')
-        .reverse()
-        .map(bit => Boolean(Number(bit || 0)))
-        .forEach((f, i) => {
-          if (status.is[STATUS_FLAGS_MAP[i]] !== f) status.is[STATUS_FLAGS_MAP[i]] = f
-        })
+    if (raw.Flags !== _last_raw.Flags) {
+      raw.Flags.toString(2).padStart(32, '0')
+          .split('')
+          .reverse()
+          .map(bit => Boolean(Number(bit || 0)))
+          .forEach((f, i) => {
+            if (status.flags[STATUS_FLAGS_MAP[i]] !== f) status.flags[STATUS_FLAGS_MAP[i]] = f
+          })
+      if (status.flags.InMainShip) status.transport = TRANSPORT_TYPE.SHIP
+      if (status.flags.InFighter) status.transport = TRANSPORT_TYPE.FIGHTER
+      if (status.flags.InSRV) status.transport = TRANSPORT_TYPE.SRV
+    }
 
-    logger.log('updated')
+    _last_raw = raw
   })
 
-  J.on('LeaveBody', () => {
-    status.pos.body_id = null
+  J.on('LeaveBody', (ev) => {
+    status.pos.body_id = 0
     status.pos.body = ''
   })
 
-  J.on('ApproachBody', () => {
-    status.pos.body_id = null
-    status.pos.body = ''
+  J.on('ApproachBody', (ev) => {
+    status.pos.body_id = ev.BodyID
+    status.pos.body = ev.Body
+    status.pos.system_addr = ev.SystemAddress
+    status.pos.system = ev.StarSystem
   })
+
+  J.on('Location', (ev) => {
+    status.pos.body = ev.Body
+    status.pos.body_id = ev.BodyID
+    status.pos.system_addr = ev.SystemAddress
+    status.pos.system = ev.StarSystem
+    status.pos.star_pos = ev.StarPos
+  })
+
+  J.on('Commander', (ev) => {
+    status.cmdr.name = ev.Name
+    status.cmdr.FID = ev.FID
+  })
+
+  // todo: check FSD jump and try to hit into the start to look up it's BodyID
 }
-
-
-/**
- 22:55:19 :: LeaveBody
- {
-  "timestamp": "2021-03-24T20:55:19Z",
-  "event": "LeaveBody",
-  "StarSystem": "Redonesses",
-  "SystemAddress": 3107442528962,
-  "Body": "Redonesses A 1",
-  "BodyID": 7
-}
- 22:54:11 :: ApproachBody
- {
-  "timestamp": "2021-03-24T20:54:11Z",
-  "event": "ApproachBody",
-  "StarSystem": "Redonesses",
-  "SystemAddress": 3107442528962,
-  "Body": "Redonesses A 1",
-  "BodyID": 7
-}
- */
-
-
-

@@ -251,9 +251,12 @@ class Journal extends EE3 {
       if (_is_ignored_record(rec)) continue
       if (stateHookEvents.includes(rec.event)) this.state_update_rec(rec)
 
-      this.emit(rec.event, rec)
-      this.emit('record', rec.event, rec)
-
+      try {
+        this.emit(rec.event, rec)
+        this.emit('record', rec.event, rec)
+      } catch (err) {
+        console.error(err)
+      }
       events_count++
     }
 
@@ -308,8 +311,13 @@ class Journal extends EE3 {
 
     if (!rec) return
 
-    this.emit(rec.event, rec)
-    this.emit('data', rec.event, rec)
+
+    try {
+      this.emit(rec.event, rec)
+      this.emit('data', rec.event, rec)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   state_update_rec (rec) {

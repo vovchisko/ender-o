@@ -8,9 +8,9 @@ import { ipcr }        from '@/modules/ipcr'
 import { status_init } from '@/state/status'
 import { ui } from '@/state/ui'
 
+require('@/styles/reset.scss')
 require('@/assets/fonts/eurocaps.css')
 require('@/assets/fonts/titillium-web.css')
-require('@/styles/vars.scss')
 require('@/styles/root.scss')
 require('@/styles/main.scss')
 

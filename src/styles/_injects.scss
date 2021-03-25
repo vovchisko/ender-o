@@ -33,16 +33,16 @@
   }
 
   &::-webkit-scrollbar {
-    width: 0.5em;
-    height: 0.5em;
-    border-radius: 0.25em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 0.25rem;
     background-color: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: var(--scroll-color-thump, orange);
     border: 1px solid transparent;
-    border-radius: 1em;
+    border-radius: 1rem;
   }
 
   &:hover::-webkit-scrollbar-thumb {
@@ -60,4 +60,17 @@
   &::-webkit-scrollbar-thumb {
     background: transparent;
   }
+}
+
+
+@mixin typo($h) {
+  font-size: var(--typo-h#{$h});
+}
+
+@mixin typo-caps($h:false) {
+  @if ($h) {
+    font-size: var(--typo-h#{$h});
+  }
+  font-family: var(--typo-font-caps);
+  text-transform: lowercase;
 }

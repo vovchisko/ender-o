@@ -1,8 +1,10 @@
 <template>
-  <h3>DEV TOOLS</h3>
-
   <div class="cols">
     <div class="col">
+      <div class="block">
+        <b class="caps">DUMP</b>
+        <pre>{{ ui }}</pre>
+      </div>
       <div class="block">
         <b class="caps">DATA</b>
         <div v-for="e in data">
@@ -10,7 +12,6 @@
           <pre v-if="e.expanded">{{ e.rec }}</pre>
         </div>
       </div>
-
       <div class="block">
         <b class="caps">JOURNAL</b>
         <div v-for="e in records">
@@ -60,29 +61,36 @@ export default {
 }
 </script>
 <style lang="scss" scoped="true">
+.screen-title {
+  @include typo-caps(400);
+}
+
 .cols {
-  font-size: 1.1vh;
-  text-shadow: 0 0 2px black;
   color: orange;
+
   display: flex;
   justify-content: space-between;
+  max-height: 100%;
 
   .col {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
 
-  }
+    .block {
+      @include scrollbar-awesome();
 
-  pre {
-    margin: 0;
-    padding: 0.1em;
-  }
+      min-height: 15%;
+      margin: 1rem;
+      overflow: auto;
 
-  .block {
-    @include scrollbar-awesome();
+      b { font-size: 1.2rem; }
 
-    margin: 1em;
-    overflow: auto;
-
-    b { font-size: 1.2em; }
+      pre {
+        margin: 0;
+        padding: 0.1em;
+      }
+    }
   }
 }
 </style>

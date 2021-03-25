@@ -1,6 +1,5 @@
 <template>
-  <h3>RACING [IN PROGRESS]</h3>
-
+  <p>RACING [IN PROGRESS]</p>
 </template>
 
 <script>
@@ -10,5 +9,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+p {
+  @include typo(200);
+}
 </style>

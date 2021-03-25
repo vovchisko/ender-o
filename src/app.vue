@@ -1,34 +1,32 @@
 <template>
-  <header class="header">
-    <button
-        v-for="screen in SCREENS"
-        :key="screen"
-        @click="show_screen(screen)"
-        :class="{'active': ui.screen === screen}"
-    >
-      {{ screen }}
-    </button>
-    <button class="quit" @click="quit">quit</button>
-  </header>
+  <div class="app">
+    <app-header class="header" />
 
-  <development v-if="ui.screen === SCREENS.DEVELOPMENT" class="screen" />
-  <exploration v-if="ui.screen === SCREENS.EXPLORATION" class="screen" />
-  <racing v-if="ui.screen === SCREENS.RACING" class="screen" />
+    <main class="screen"
+          :class="{'screen-fx-blur': ui.blur_screen, 'screen-fx-hide': ui.hide_screen }">
+      <devtools v-if="ui.screen === SCREENS.DEVELOPMENT" />
+      <exploration v-if="ui.screen === SCREENS.EXPLORATION" />
+      <racing v-if="ui.screen === SCREENS.RACING" />
+    </main>
 
-  <footer>ender-o:dev</footer>
+    <app-footer class="footer" />
+  </div>
 </template>
 
 <script>
 import { SCREENS, ui } from '@/state/ui'
 
-import Development from '@/screens/development'
+import Devtools    from '@/screens/devtools'
 import Exploration from '@/screens/exploration'
 import Racing      from '@/screens/racing'
-import { ipcr }    from '@/modules/ipcr'
+import AppHeader   from '@/components/app-header'
+import AppFooter   from '@/components/app-footer'
 
 export default {
   components: {
-    Development,
+    AppHeader,
+    AppFooter,
+    Devtools,
     Exploration,
     Racing,
   },
@@ -36,34 +34,70 @@ export default {
   setup () {
     return { ui, SCREENS }
   },
-
-  methods: {
-    show_screen (s) {
-      this.ui.screen = s
-    },
-    quit () {
-      ipcr.quit()
-    },
-  },
 }
 </script>
 
 <style lang="scss" scoped>
+.app {
+  position: absolute;
+  top: var(--lt-screen-pad);
+  right: var(--lt-screen-pad);
+  bottom: var(--lt-screen-pad);
+  left: var(--lt-screen-pad);
 
-.header {
-  &-menu-btn {
-    border: 0 none;
+  display: grid;
+  grid-gap: 5px;
+  grid-template-rows:
+      minmax(0, var(--lt-header-h))
+      auto
+      minmax(0, var(--lt-footer-h));
 
-    &_quit {
-      margin-left: auto;
+  .header, .footer, .screen {
+    overflow: hidden;
+  }
+
+  .header {
+    height: var(--lt-header-h);
+  }
+
+  .screen {
+    overflow: hidden;
+    transition: all linear 200ms;
+
+    &-fx-blur {
+     // opacity: 0.8;
+      filter: blur(6px);
     }
+
+    &-fx-hide {
+      display: none;
+    }
+  }
+
+  .footer {
+    height: var(--lt-footer-h);
+  }
+}
+</style>
+
+<!-- GLOBAL OVERLAY FEEDBACK -->
+<style lang="scss">
+body {
+  border-top: 3px solid transparent;
+}
+
+body[overlay='on'] {
+  &[interact='on'] {
+    background: rgba(0, 0, 0, .55);
+    border-top: 3px solid rgba(255, 165, 0, 0.5);
+  }
+
+  &[interact='off'] {
+    background: transparent;
   }
 }
 
-.screen {
-  top: var(--lt-header-h);
-  bottom: 0;
-  right: 0;
-  left: 0;
+body[overlay='off'] {
+  background: #222 !important;
 }
 </style>

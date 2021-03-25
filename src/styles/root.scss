@@ -1,41 +1,27 @@
-html, body { background: transparent; }
+:root {
+  --lt-header-h: 42px;
+  --lt-footer-h: 32px;
+  --lt-screen-pad: 16px;
 
-#app {
-  display: block;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  position: absolute;
+  --ui-border-w: 1px;
+  --ui-font-size: var();
+
+  --pal-white: white;
+  --pal-orange: orange;
+  --pal-grey: silver;
+  --pal-green: #58be58;
+  --pal-blue: #1b9ff6;
+  --pal-red: #f61034;
+
+  --scroll-width: 3px;
+  --scroll-color-thumb: orange;
+
+  --typo-font: Titillium, sans-serif;
+  --typo-font-caps: EuroCaps, consolas;
+
+  --typo-h100: 1vh;
+  --typo-h200: 1.2vh;
+  --typo-h300: 1.4vh;
+  --typo-h400: 1.5vh;
 }
 
-.caps {
-  font-family: EuroCaps, sans-serif;
-}
-
-// basic body things
-body {
-  border-top: 3px solid transparent;
-  font-family: Titillium, sans-serif;
-  color: #ddd;
-}
-
-body[overlay='on'] {
-  padding: 0;
-  margin: 0;
-
-  &[interact='on'] {
-    background: rgba(0, 0, 0, .55);
-    border-top: 3px solid rgba(255, 165, 0, 0.45);
-    overflow-x: hidden
-  }
-
-  &[interact='off'] {
-    background: transparent;
-  }
-}
-
-body[overlay='off'] {
-  background: #222 !important;
-}
