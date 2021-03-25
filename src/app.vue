@@ -65,8 +65,8 @@ export default {
     transition: all linear 200ms;
 
     &-fx-blur {
-     // opacity: 0.8;
-      filter: blur(6px);
+      opacity: 0.8;
+      // filter: blur(7px); // todo: bright it back later
     }
 
     &-fx-hide {

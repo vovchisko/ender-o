@@ -2,59 +2,18 @@ import { reactive }      from 'vue'
 import { J }             from '@/modules/journal'
 import { create_logger } from '@/modules/logger'
 import get               from 'lodash/get'
+import {
+  extract,
+  J_BODY_TYPE,
+  J_FLAGS_TEMPLATE,
+  J_GUI_FOCUS, J_JUMP_TYPE,
+  J_LEGAL_STATE,
+} from '@/helpers/journal_api'
 
 const logger = create_logger('status', { bg: 'grey', text: 'white' })
 
 let _last_raw = {}
 
-export const STATUS_FLAGS_MAP = [
-  'Docked',
-  'Landed',
-  'LandingGearRetracted',
-  'ShieldsUp',
-  'Supercruise',
-  'FlightAssistOff',
-  'HardpointsDeployed',
-  'InWing',
-  'LightsOn',
-  'CargoScoopDeployed',
-  'SilentRunning',
-  'ScoopingFuel',
-  'SrvHandbrake',
-  'SrvTurretView',
-  'SrvTurretRetracted',
-  'SrvDriveAssist',
-  'FsdMassLocked',
-  'FsdCharging',
-  'FsdCooldown',
-  'LowFuel',
-  'OverHeating',
-  'HasLatLong',
-  'IsInDanger',
-  'BeingInterdicted',
-  'InMainShip',
-  'InFighter',
-  'InSRV',
-  'HudAnalysisMode',
-  'NightVision',
-  'AltitudeFromAverageRadius',
-  'fsdJump',
-  'srvHighBeam',
-]
-export const GUI_FOCUS = {
-  NO_FOCUS: 0,    // NoFocus
-  INT_RIGHT: 1,   // InternalPanel (right hand side)
-  EXT_LEFT: 2,    // ExternalPanel (left hand side)
-  COMM: 3,        // CommsPanel (top)
-  ROLE: 4,        // RolePanel (bottom)
-  STATION: 5,     // StationServices
-  GALAXY_MAP: 6,  // GalaxyMap
-  SYSTEM_MAP: 7,  // SystemMap
-  ORREY: 8,       // Orrery
-  FSS: 9,         // FSS mode
-  SSA: 10,        // SAA mode
-  CODEX: 11,      // Codex
-}
 export const TRANSPORT_TYPE = {
   UNKNOWN: '',
   LEGS: 'LEGS',
@@ -62,75 +21,38 @@ export const TRANSPORT_TYPE = {
   FIGHTER: 'FIGHTER',
   SHIP: 'SHIP',
 }
-export const LEGAL_STATE = {
-  CLEAN: 'Clean',
-  ILLEGAL_CARGO: 'IllegalCargo',
-  SPEEDING: 'Speeding',
-  WANTED: 'Wanted',
-  HOSTILE: 'Hostile',
-  PASSENGER_WANTED: 'PassengerWanted',
-  WARRANT: 'Warrant',
-}
+
 
 export const status = reactive({
   updated: '',
-  cmdr: {
-    name: '',
-    FID: '',
-  },
-  legal_state: LEGAL_STATE.CLEAN,
+  legal_state: J_LEGAL_STATE.CLEAN,
   fire_group: 0,
-  gui_focus: GUI_FOCUS.NO_FOCUS,
+  gui_focus: J_GUI_FOCUS.NO_FOCUS,
   fuel: 0,
   fuel_reservouir: 0,
   cargo: 0,
   pips: [ 0, 0, 0 ],
   transport: TRANSPORT_TYPE.UNKNOWN,
+  near: {
+    body: '',
+    type: J_BODY_TYPE.NONE,
+  },
+  docked: {
+    name: '',
+    type: '',
+    market_id: null,
+  },
   pos: {
     system_addr: null,
     system: '',
-    body: '',
-    body_r: 0,
-    body_id: 0,
+    planet: '',
+    planet_r: 0,
     lat: 0,
     lon: 0,
     alt: 0,
     heading: 0,
   },
-  flags: {
-    Docked: 0,                        // 0     1               Docked, (on a landing pad)
-    Landed: 0,                        // 1     2               Landed, (on planet surface)
-    LandingGearRetracted: 0,          // 2     4               Landing Gear Down
-    ShieldsUp: 0,                     // 3     8               Shields Up
-    Supercruise: 0,                   // 4     16              Supercruise
-    FlightAssistOff: 0,               // 5     32              FlightAssist Off
-    HardpointsDeployed: 0,            // 6     64              Hardpoints Deployed
-    InWing: 0,                        // 7     128             In Wing
-    LightsOn: 0,                      // 8     256             LightsOn
-    CargoScoopDeployed: 0,            // 9     512             Cargo Scoop Deployed
-    SilentRunning: 0,                 // 10    1024            Silent Running,
-    ScoopingFuel: 0,                  // 11    2048            Scooping Fuel
-    SrvHandbrake: 0,                  // 12    4096            Srv Handbrake
-    SrvTurretView: 0,                 // 13    8192            Srv using Turret view
-    SrvTurretRetracted: 0,            // 14    16384           Srv Turret retracted (close to ship)
-    SrvDriveAssist: 0,                // 15    32768           Srv DriveAssist
-    FsdMassLocked: 0,                 // 16    65536           Fsd MassLocked
-    FsdCharging: 0,                   // 17    131072          Fsd Charging
-    FsdCooldown: 0,                   // 18    262144          Fsd Cooldown
-    LowFuel: 0,                       // 19    524288          Low Fuel ( < 25% )
-    OverHeating: 0,                   // 20    1048576         Over Heating ( > 100% )
-    HasLatLong: 0,                    // 21    2097152         Has Lat Long
-    IsInDanger: 0,                    // 22    4194304         IsInDanger
-    BeingInterdicted: 0,              // 23    8388608         Being Interdicted
-    InMainShip: 0,                    // 24    16777216        In MainShip
-    InFighter: 0,                     // 25    33554432        In Fighter
-    InSRV: 0,                         // 26    67108864        In SRV
-    HudAnalysisMode: 0,               // 27    134217728       Hud in Analysis mode
-    NightVision: 0,                   // 28    268435456       Night Vision
-    AltitudeFromAverageRadius: 0,     // 29    536870912       Altitude from Average radius
-    fsdJump: 0,                       // 30    1073741824      fsdJump
-    srvHighBeam: 0,                   // 31    2147483648      srvHighBeam
-  },
+  flags: Object.assign({}, J_FLAGS_TEMPLATE),
 })
 
 export function status_init () {
@@ -138,29 +60,24 @@ export function status_init () {
     if (!raw) return
     status.updated = raw.timestamp
 
-    status.legal_state = get(raw, 'LegalState', LEGAL_STATE.CLEAN)
-    status.fire_group = get(raw, 'FireGroup', 0)
-    status.gui_focus = get(raw, 'GuiFocus', 0)
-    status.fuel = get(raw, 'Fuel.FuelMain', 0)
-    status.fuel_reservouir = get(raw, 'Fuel.FuelReservoir', 0)
-    status.cargo = get(raw, 'Cargo', 0)
-    status.pips = get(raw, 'Pips', [ 0, 0, 0 ])
+    status.legal_state = raw.LegalState || J_LEGAL_STATE.CLEAN
+    status.fire_group = raw.FireGroup || 0
+    status.gui_focus = raw.GuiFocus || 0
+    status.fuel = raw.Fuel.FuelMain || 0
+    status.fuel_reservouir = raw.Fuel.FuelReservoir || 0
+    status.cargo = raw.Cargo || 0
+    status.pips = raw.Pips || [ 0, 0, 0 ]
 
-    status.pos.lat = get(raw, 'Latitude', 0)
-    status.pos.lon = get(raw, 'Longitude', 0)
-    status.pos.alt = get(raw, 'Altitude', 0)
-    status.pos.heading = get(raw, 'Heading', 0)
-    status.pos.body = get(raw, 'BodyName', '') // ? conflicts
-    status.pos.body_r = get(raw, 'PlanetRadius', 0) // ?
+    status.pos.lat = raw.Latitude || 0
+    status.pos.lon = raw.Longitude || 0
+    status.pos.alt = raw.Altitude || 0
+    status.pos.heading = raw.Heading || 0
+    status.pos.planet = get(raw, 'BodyName', '') // ? conflicts
+    status.pos.planet_r = raw.PlanetRadius || 0 // ?
 
     if (raw.Flags !== _last_raw.Flags) {
-      raw.Flags.toString(2).padStart(32, '0')
-          .split('')
-          .reverse()
-          .map(bit => Boolean(Number(bit || 0)))
-          .forEach((f, i) => {
-            if (status.flags[STATUS_FLAGS_MAP[i]] !== f) status.flags[STATUS_FLAGS_MAP[i]] = f
-          })
+      extract.flags(raw.Flags, status.flags)
+
       if (status.flags.InMainShip) status.transport = TRANSPORT_TYPE.SHIP
       if (status.flags.InFighter) status.transport = TRANSPORT_TYPE.FIGHTER
       if (status.flags.InSRV) status.transport = TRANSPORT_TYPE.SRV
@@ -169,30 +86,90 @@ export function status_init () {
     _last_raw = raw
   })
 
+  J.on('Docked', (ev) => {
+    status.docked.name = ev.StationName || ''
+    status.docked.type = ev.StationType || ''
+    status.docked.market_id = ev.MarketID || 0
+  })
+
+  J.on('Undocked', (ev) => {
+    status.docked.name = ''
+    status.docked.type = ''
+    status.docked.market_id = null
+  })
+
   J.on('LeaveBody', (ev) => {
-    status.pos.body_id = 0
-    status.pos.body = ''
+    status.near.body_id = ''
+    status.near.body = ''
+    status.near.type = ''
   })
 
   J.on('ApproachBody', (ev) => {
-    status.pos.body_id = ev.BodyID
-    status.pos.body = ev.Body
+    status.near.body_id = ev.BodyID
+    status.near.body = ev.Body
+    status.near.type = ''
+
     status.pos.system_addr = ev.SystemAddress
     status.pos.system = ev.StarSystem
   })
 
   J.on('Location', (ev) => {
-    status.pos.body = ev.Body
-    status.pos.body_id = ev.BodyID
+    status.near.body = ev.Body
+    status.near.body_id = ev.BodyID
+    status.near.type = extract.body_type(ev.BodyType)
+
+    if (ev.Docked) {
+      status.docked.name = ev.StationName || ''
+      status.docked.type = ev.StationType || ''
+      status.docked.market_id = ev.MarketID || 0
+    }
+
     status.pos.system_addr = ev.SystemAddress
     status.pos.system = ev.StarSystem
     status.pos.star_pos = ev.StarPos
   })
 
-  J.on('Commander', (ev) => {
-    status.cmdr.name = ev.Name
-    status.cmdr.FID = ev.FID
+  J.on('FSDJump', (ev) => {
+    status.pos.system = ev.StarSystem
+    status.pos.star_pos = ev.StarPos
+    status.pos.system_addr = ev.SystemAddress
   })
 
-  // todo: check FSD jump and try to hit into the start to look up it's BodyID
+  J.on('StartJump', (ev) => {
+    if (ev.JumpType === J_JUMP_TYPE.HYPERSPACE) {
+      status.near.body = ''
+      status.near.body_id = ''
+      status.near.type = ''
+    }
+  })
+
+  J.on('SupercruiseExit', (ev) => {
+    status.pos.system = ev.StarSystem
+    status.pos.system_addr = ev.SystemAddress
+    status.pos.star_pos = ev.StarPos
+
+    status.near.body = ev.Body
+    status.near.body_id = ev.BodyID
+    status.near.type = extract.body_type(ev.BodyType)
+  })
+
+  J.on('SupercruiseExit', (ev) => {
+    status.pos.system = ev.StarSystem
+    status.pos.system_addr = ev.SystemAddress
+    status.pos.star_pos = ev.StarPos
+
+    status.near.body = ev.Body
+    status.near.body_id = ev.BodyID
+    status.near.type = extract.body_type(ev.BodyType)
+  })
+
+  J.on('SupercruiseEntry', (ev) => {
+    status.pos.system = ev.StarSystem
+    status.pos.system_addr = ev.SystemAddress
+
+    status.near.body = ''
+    status.near.body_id = ''
+    status.near.type = ''
+  })
 }
+

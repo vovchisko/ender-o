@@ -2,20 +2,18 @@
   <div class="cols">
     <div class="col">
       <div class="block">
-        <b class="caps">DUMP</b>
-        <pre>{{ ui }}</pre>
-      </div>
-      <div class="block">
         <b class="caps">DATA</b>
-        <div v-for="e in data">
-          <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{ e.event }}</pre>
+        <div v-for="e in data" class="rec" :class="e.expanded ? 'expanded':''">
+          <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{
+              e.event }}</pre>
           <pre v-if="e.expanded">{{ e.rec }}</pre>
         </div>
       </div>
       <div class="block">
         <b class="caps">JOURNAL</b>
-        <div v-for="e in records">
-          <pre @click="e.expanded = !e.expanded">{{ rec_t(e.rec.timestamp) }} :: {{ e.event }}</pre>
+        <div v-for="e in records" class="rec">
+          <pre @click="e.expanded = !e.expanded">{{ rec_t(e.rec.timestamp) }} :: {{
+              e.event }}</pre>
           <pre v-if="e.expanded">{{ e.rec }}</pre>
         </div>
       </div>
@@ -80,15 +78,24 @@ export default {
     .block {
       @include scrollbar-awesome();
 
-      min-height: 15%;
       margin: 1rem;
       overflow: auto;
+      min-height: 15%;
 
       b { font-size: 1.2rem; }
 
+      .rec:hover {
+        color: #ffba52;
+      }
+
+      .rec.expanded {
+        color: #ffdaa3 !important;
+      }
+
       pre {
         margin: 0;
-        padding: 0.1em;
+        padding: 0.2rem;
+        line-height: 1;
       }
     }
   }
