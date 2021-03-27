@@ -43,8 +43,6 @@ header {
 
   button {
     margin-right: 8px;
-
-    .active { }
   }
 
   .mode-title {

@@ -1,6 +1,6 @@
 <template>
   <div class="cols">
-    <div class="col">
+    <!--<div class="col">
       <div class="block">
         <b class="caps">DATA</b>
         <div v-for="e in data" class="rec" :class="e.expanded ? 'expanded':''">
@@ -17,25 +17,37 @@
           <pre v-if="e.expanded">{{ e.rec }}</pre>
         </div>
       </div>
-    </div>
+    </div>-->
+
     <div class="col">
+      <div class="block">
+        <guidance-bar class="guidance-bar"/>
+      </div>
+      <div class="block">
+        <dest-editor />
+      </div>
+    </div>
+    <!--<div class="col">
       <div class="block">
         <b class="caps">COMPUETD STATUS</b>
         <pre>{{ status }}</pre>
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 
 <script>
-import { status }        from '@/state/status'
-import { J }             from '@/modules/journal'
 import { reactive }      from 'vue'
+import { J }             from '@/modules/journal'
+import { status }        from '@/state/status'
 import { ui }            from '@/state/ui'
-import { rec_dt, rec_t } from '@/helpers/date_formaters'
+import { rec_dt, rec_t } from '@/helpers/formaters'
+import DestEditor        from '@/components/dest-editor'
+import GuidanceBar       from '@/components/guidance-bar'
 
 export default {
   name: 'development',
+  components: { GuidanceBar, DestEditor },
   setup () {
     let counter = 0
     const records = reactive([])
@@ -70,7 +82,10 @@ export default {
   justify-content: space-between;
   max-height: 100%;
 
+  .guidance-bar { margin: 0 auto; max-width: 700px; }
+
   .col {
+    flex: 1;
     display: flex;
     flex-direction: column;
     max-height: 100%;
@@ -83,6 +98,7 @@ export default {
       min-height: 15%;
 
       b { font-size: 1.2rem; }
+
 
       .rec:hover {
         color: #ffba52;

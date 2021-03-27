@@ -8,7 +8,7 @@ export const cmdr = reactive({
   mode: '',
   name: '',
   fid: '',
-  squadron: ''
+  squadron: '',
 })
 
 export function cmdr_init () {
@@ -17,12 +17,12 @@ export function cmdr_init () {
     cmdr.name = raw.Commander
     cmdr.fid = raw.FID
 
-    logger.log('load game:', [ cmdr.fid, 'CMDR' ,cmdr.name, cmdr.mode ].join(' / '))
+    logger.log('load game:', [ cmdr.fid, 'CMDR', cmdr.name, cmdr.mode ].join(' / '))
   })
 
   J.on('SquadronStartup', (raw) => {
     cmdr.squadron = raw.SquadronName || ''
 
-    logger.log('load game:', [ cmdr.fid, 'CMDR' ,cmdr.name, cmdr.mode ].join(' / '))
+    logger.log('load game:', [ cmdr.fid, 'CMDR', cmdr.name, cmdr.mode ].join(' / '))
   })
 }
