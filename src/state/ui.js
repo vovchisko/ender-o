@@ -4,13 +4,14 @@ import { status }      from '@/state/status'
 import { J_GUI_FOCUS } from '@/helpers/journal_api'
 
 const SCREENS = Object.freeze({
-  DEVELOPMENT: 'DEVELOPMENT',
+  DEVTOOLS: 'DEVTOOLS',
   EXPLORATION: 'EXPLORATION',
   RACING: 'RACING',
+  RACING_EDIT: 'RACING_EDIT',
 })
 
 const ui = reactive({
-  screen: SCREENS.DEVELOPMENT,
+  screen: SCREENS.RACING_EDIT,
   is_interact: false,
   is_overlay: false,
   blur_screen: computed(() => {

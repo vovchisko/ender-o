@@ -1,9 +1,9 @@
 <template>
   <div class="cols">
-    <!--<div class="col">
+    <div class="col">
       <div class="block">
         <b class="caps">DATA</b>
-        <div v-for="e in data" class="rec" :class="e.expanded ? 'expanded':''">
+        <div v-for="e in data" :class="e.expanded ? 'expanded':''" class="rec">
           <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{
               e.event }}</pre>
           <pre v-if="e.expanded">{{ e.rec }}</pre>
@@ -17,22 +17,16 @@
           <pre v-if="e.expanded">{{ e.rec }}</pre>
         </div>
       </div>
-    </div>-->
-
-    <div class="col">
-      <div class="block">
-        <guidance-bar class="guidance-bar"/>
-      </div>
-      <div class="block">
-        <dest-editor />
-      </div>
     </div>
-    <!--<div class="col">
+    <div class="col wide">
+      test
+    </div>
+    <div class="col">
       <div class="block">
         <b class="caps">COMPUETD STATUS</b>
         <pre>{{ status }}</pre>
       </div>
-    </div>-->
+    </div>
   </div>
 </template>
 
@@ -42,12 +36,13 @@ import { J }             from '@/modules/journal'
 import { status }        from '@/state/status'
 import { ui }            from '@/state/ui'
 import { rec_dt, rec_t } from '@/helpers/formaters'
-import DestEditor        from '@/components/dest-editor'
-import GuidanceBar       from '@/components/guidance-bar'
+import DestEditor        from '@/components/guide-editor'
+import GuidanceBar       from '@/components/guide-heading'
+import Racing            from '@/screens/racing'
 
 export default {
   name: 'development',
-  components: { GuidanceBar, DestEditor },
+  components: { Racing, GuidanceBar, DestEditor },
   setup () {
     let counter = 0
     const records = reactive([])
@@ -76,28 +71,37 @@ export default {
 }
 
 .cols {
-  color: orange;
-
   display: flex;
+
   justify-content: space-between;
   max-height: 100%;
+  color: orange;
 
-  .guidance-bar { margin: 0 auto; max-width: 700px; }
+  .guidance-heading {
+    max-width: 700px;
+    margin: 0 auto;
+  }
 
   .col {
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
     max-height: 100%;
+
+    &.wide {
+      flex: 2
+    }
 
     .block {
       @include scrollbar-awesome();
 
-      margin: 1rem;
       overflow: auto;
       min-height: 15%;
+      margin: 1rem;
 
-      b { font-size: 1.2rem; }
+      b {
+        font-size: 1.2rem;
+      }
 
 
       .rec:hover {
@@ -109,9 +113,9 @@ export default {
       }
 
       pre {
+        line-height: 1;
         margin: 0;
         padding: 0.2rem;
-        line-height: 1;
       }
     }
   }

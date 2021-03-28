@@ -4,8 +4,8 @@
       <button
           v-for="screen in SCREENS"
           :key="screen"
-          @click="show_screen(screen)"
           :class="{'active': ui.screen === screen}"
+          @click="show_screen(screen)"
       >
         {{ screen }}
       </button>
@@ -37,7 +37,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 header {
   display: flex;
 
@@ -49,6 +49,8 @@ header {
     @include typo-caps(400);
   }
 
-  .quit { margin-left: auto; }
+  .quit {
+    margin-left: auto;
+  }
 }
 </style>

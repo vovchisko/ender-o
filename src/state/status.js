@@ -48,9 +48,9 @@ export const status = reactive({
     system: '',
     planet: '',
     planet_r: 0,
-    lat: 0,
-    lon: 0,
-    alt: 0,
+    lat: null,
+    lon: null,
+    alt: null,
     heading: 0,
   },
   flags: Object.fromEntries(J_FLAGS_MAP.map(a => [ a, 0 ])),
@@ -69,9 +69,9 @@ export function status_init () {
     status.cargo = raw.Cargo || 0
     status.pips = raw.Pips || [ 0, 0, 0 ]
 
-    status.pos.lat = raw.Latitude || 0
-    status.pos.lon = raw.Longitude || 0
-    status.pos.alt = raw.Altitude || 0
+    status.pos.lat = raw.Latitude !== undefined ? raw.Latitude : null
+    status.pos.lon = raw.Longitude  !== undefined ? raw.Longitude : null
+    status.pos.alt = raw.Altitude  !== undefined ? raw.Altitude : null
     status.pos.heading = raw.Heading || 0
     status.pos.planet = extract.stellar_name(raw.BodyName)
     status.pos.planet_r = raw.PlanetRadius || 0 // ?

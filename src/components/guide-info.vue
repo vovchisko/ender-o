@@ -1,40 +1,27 @@
 <template>
-
-</template>
-
-<script>
-export default {
-name: "guidance-destination"
-}
-</script>
-
-<style scoped lang="scss">
-
-</style>
-<template>
   <div class="loc-dest">
     <h5>destination</h5>
 
     <em v-if="PILOT.dest.sys_id"
         v-bind:class="PILOT.dest.sys_id === PILOT.cmdr.sys_id ? 'check' : 'uncheck'">
-      <b>SYS</b><span>{{PILOT.dest.sys_id}}</span>
+      <b>SYS</b><span>{{ PILOT.dest.sys_id }}</span>
     </em>
     <em v-if="PILOT.dest.st_id"
         v-bind:class="PILOT.dest.st_id === PILOT.cmdr.st_id ? 'check' : 'uncheck'">
-      <b>ST</b><span>{{PILOT.dest.st_id}}</span>
+      <b>ST</b><span>{{ PILOT.dest.st_id }}</span>
     </em>
     <em v-if="PILOT.dest.body_id"
         v-bind:class="PILOT.dest.body_id === PILOT.cmdr.body_id ? 'check' : 'uncheck'">
-      <b>BODY</b><span>{{PILOT.dest.body_id}}</span>
+      <b>BODY</b><span>{{ PILOT.dest.body_id }}</span>
     </em>
     <em v-if="PILOT.dest.min_alt !== null"
         v-bind:class="PILOT.status.alt !== null && PILOT.status.alt <= PILOT.dest.min_alt ? 'check' : 'uncheck'">
-      <b>MIN.ALT</b><span>{{PILOT.dest.min_alt}} <u>m</u></span>
+      <b>MIN.ALT</b><span>{{ PILOT.dest.min_alt }} <u>m</u></span>
     </em>
     <em v-if="PILOT.dest.lat !== null && PILOT.dest.lon !== null"
         v-bind:class="PILOT.dest.dist !== null && PILOT.dest.dist <= 2 ? 'check' : 'uncheck'">
-      <b>LAT</b><span>{{PILOT.dest.lat | nn(4,4)}} <u>°</u></span>
-      <b>LON</b><span>{{PILOT.dest.lon | nn(4,4)}} <u>°</u></span>
+      <b>LAT</b><span>{{ PILOT.dest.lat | nn(4,4) }} <u>°</u></span>
+      <b>LON</b><span>{{ PILOT.dest.lon | nn(4,4) }} <u>°</u></span>
     </em>
 
     <em class="no-dest">destination not specified</em>
@@ -42,23 +29,40 @@ name: "guidance-destination"
 </template>
 
 <script>
-import PILOT from '../ctrl/pilot'
 
 export default {
-  name: "guidance-destination",
-  data: () => { return {PILOT: PILOT}}
+  name: 'guide-heading',
+  data: () => { return { PILOT: PILOT }},
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .loc-dest {
-  h4 { margin-bottom: 0; }
-  em { @include typo-caps(300) }
-  em > b { width: 30%}
-  em > span { width: 70%; text-align: left }
-  em.check { color: green; }
+  h4 {
+    margin-bottom: 0;
+  }
+  em {
+    @include typo-caps(300)
+  }
+  em > b {
+    width: 30%
+  }
+  em > span {
+    width: 70%;
+    text-align: left
+  }
+  em.check {
+    color: green;
+  }
 }
-.loc-dest em.no-dest {display: none; opacity: 0.5}
-.loc-dest em:first-of-type {display: block !important;}
+
+.loc-dest em.no-dest {
+  display: none;
+  opacity: 0.5
+}
+
+.loc-dest em:first-of-type {
+  display: block !important;
+}
 </style>

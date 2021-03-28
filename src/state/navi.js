@@ -1,15 +1,13 @@
 import { computed, reactive, watch } from 'vue'
 import { status }                    from '@/state/status'
-import Signal from 'a-signal'
 
 const PI = Math.PI
 
 export const DEST_TYPE = Object.freeze({
-  SYSTEM: 'SYSTEM',
-  APPROACH: 'APPROACH',
-  BODY: 'BODY',
-  PLANETARY: 'PLANETARY',
-  DOCK: 'DOCK',
+  SYSTEM: 'SYSTEM', // visit the system
+  BODY: 'BODY', // approach the body
+  PLANETARY: 'PLANETARY', // planetary position
+  DOCK: 'DOCK', // dock on the station
 })
 
 export const navi = reactive({
@@ -30,13 +28,26 @@ export const navi = reactive({
   },
 })
 
-// outter buffer vars
+export const navi_reset = () => {
+  navi.is_set = false
+  navi.type = DEST_TYPE.SYSTEM
+  navi.required.ship_model = ''
+  navi.required.transport = ''
+  navi.dest.system = ''
+  navi.dest.planet = ''
+  navi.dest.docked = ''
+  navi.dest.lon = null
+  navi.dest.lat = null
+  navi.dest.alt = null
+  navi.dest.min_dist = 0
+}
 
+// outter buffer vars
 
 export const guidance = reactive({
   is_head_active: false,
   is_heading_err: false,
-  head: 0,
+  heading: 0,
   distance: 0,
   is_transport_ok: computed(() => {
     return navi.required.transport
@@ -65,8 +76,6 @@ export const guidance = reactive({
 
 
 const upd_planetary_guidance = () => {
-  guidance.is_head_active = true
-
   let lat_start,
       lot_start,
       lat_dest,
@@ -115,14 +124,14 @@ const upd_planetary_guidance = () => {
 
 
 watch([ status, navi ], () => {
-  if (!navi.is_set || navi.type !== DEST_TYPE.PLANETARY || !navi.dest.lon || !navi.dest.lat || !status.pos.alt) {
-    //      ^                          ^                                        ^                         ^                    //
-    //      |                          |                                        |                         |                    //
-    //   destination set      and in rhight mode                  destination includes coords         status show alt          //
-    //                                                                  (maybe redunant)           (meand on the planet)       //
-
+  if (
+      !navi.is_set || navi.type !== DEST_TYPE.PLANETARY ||
+      navi.dest.lon === null || navi.dest.lat === null || status.pos.alt === null
+  ) {
     guidance.is_head_active = false
+    guidance.is_heading_err = false
   } else {
+    guidance.is_heading_err = false
     guidance.is_head_active = true
     upd_planetary_guidance()
   }

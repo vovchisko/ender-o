@@ -84,5 +84,5 @@ export const extract = {
         })
   },
 
-  stellar_name: (str) => str ? str.toLowerCase() : ''
+  stellar_name: (str) => str ? str.toLowerCase() : '',
 }

@@ -2,11 +2,14 @@
   <div class="app">
     <app-header class="header" />
 
-    <main class="screen"
-          :class="{'screen-fx-blur': ui.blur_screen, 'screen-fx-hide': ui.hide_screen }">
-      <devtools v-if="ui.screen === SCREENS.DEVELOPMENT" />
+    <main
+        :class="{'screen-fx-blur': ui.blur_screen, 'screen-fx-hide': ui.hide_screen }"
+        class="screen"
+    >
+      <devtools v-if="ui.screen === SCREENS.DEVTOOLS" />
       <exploration v-if="ui.screen === SCREENS.EXPLORATION" />
       <racing v-if="ui.screen === SCREENS.RACING" />
+      <racing-edit v-if="ui.screen === SCREENS.RACING_EDIT" />
     </main>
 
     <app-footer class="footer" />
@@ -21,9 +24,11 @@ import Exploration from '@/screens/exploration'
 import Racing      from '@/screens/racing'
 import AppHeader   from '@/components/app-header'
 import AppFooter   from '@/components/app-footer'
+import RacingEdit  from '@/screens/racing-edit'
 
 export default {
   components: {
+    RacingEdit,
     AppHeader,
     AppFooter,
     Devtools,
@@ -48,9 +53,9 @@ export default {
   display: grid;
   grid-gap: 5px;
   grid-template-rows:
-      minmax(0, var(--lt-header-h))
-      auto
-      minmax(0, var(--lt-footer-h));
+    minmax(0, var(--lt-header-h))
+    auto
+    minmax(0, var(--lt-footer-h));
 
   .header, .footer, .screen {
     overflow: hidden;
@@ -65,8 +70,8 @@ export default {
     transition: all linear 200ms;
 
     &-fx-blur {
-      opacity: 0.8;
-      // filter: blur(7px); // todo: bright it back later
+      // opacity: 0.8;
+      filter: blur(7px);
     }
 
     &-fx-hide {
@@ -88,8 +93,8 @@ body {
 
 body[overlay='on'] {
   &[interact='on'] {
-    background: rgba(0, 0, 0, .55);
     border-top: 3px solid rgba(255, 165, 0, 0.5);
+    background: rgba(0, 0, 0, .55);
   }
 
   &[interact='off'] {
