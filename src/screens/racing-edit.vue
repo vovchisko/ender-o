@@ -1,66 +1,64 @@
 <template>
-  <div class="cols">
-    <div class="col">
-      <div class="block">
-        <b class="caps">CURRENT POINT</b>
-        <pre>{{ guidance }}</pre>
-      </div>
-      <div class="block">
-        <b class="caps">DESTINATION</b>
+  <div class="panel pan--left-long">
+    <pre>{{ guidance }}</pre>
+    <pre>{{ navi }}</pre>
+  </div>
 
-        <button @click="clear_destination">CLEAR</button>
-
-        <template v-if="!show_edit">
-          <button @click="show_edit = true">EDIT</button>
-          <pre>{{ navi }}</pre>
-        </template>
-        <dest-editor
-            v-else
-            @apply="apply_destination"
-            @cancel="show_edit = false"
-        />
-      </div>
+  <!--
+    <div class="panel pan&#45;&#45;right-long">
+      <pre slot="right-long">{{ status }}</pre>
     </div>
+  -->
 
-    <div class="col wide">
-      <guidance-bar></guidance-bar>
-    </div>
+  <div class="panel pan--heading-objectives" v-if="navi.is_set">
+    <guide-info />
 
-    <div class="col">
-      <div class="block">
-        <b class="caps">COMPUETD STATUS</b>
-        <pre>{{ status }}</pre>
-      </div>
-    </div>
+  </div>
+  <div class="panel pan--heading"
+       v-if="navi.is_set && navi.type === DEST_TYPE.PLANETARY">
+    <guide-heading />
+  </div>
+  <div v-if="show_edit" class="panel pan--central-main">
+    <navi-editor @apply="apply_destination" @cancel="show_edit = false" />
+  </div>
 
-
+  <div v-if="!show_edit" class="panel pan--bottom">
+    <button @click="clear_destination" v-if="navi.is_set">CLEAR</button>
+    <button @click="show_edit = true">EDIT</button>
   </div>
 </template>
 
 <script>
-import { status }                     from '@/state/status'
-import { guidance, navi, navi_reset } from '@/state/navi'
-import DestEditor                     from '@/components/guide-editor'
-import GuidanceBar                    from '@/components/guide-heading'
-import { ref }                        from 'vue'
+import { ref }                                   from 'vue'
+import { status }                                from '@/state/status'
+import { DEST_TYPE, guidance, navi, navi_reset } from '@/state/navi'
+import { UI_PANELS }                             from '@/state/ui'
+import NaviEditor                                from '@/components/navi-editor'
+import GuideHeading                              from '@/components/guide-heading'
+import GuideInfo                                 from '@/components/guide-objective'
 
 export default {
   name: 'racing-edit',
-  components: { GuidanceBar, DestEditor },
+  components: { GuideInfo, GuideHeading, NaviEditor },
   setup () {
     const show_edit = ref(false)
 
     return {
       show_edit,
       status, guidance, navi,
+      UI_PANELS,
+      DEST_TYPE,
     }
   },
   methods: {
     apply_destination (new_navi) {
       navi.is_set = true
+
       navi.type = new_navi.type
+      navi.approach = new_navi.approach
       Object.assign(navi.required, new_navi.required)
       Object.assign(navi.dest, new_navi.dest)
+
       this.show_edit = false
     },
 
@@ -71,54 +69,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped="true">
-.cols {
-  display: flex;
 
-  justify-content: space-between;
-  max-height: 100%;
-  color: orange;
-
-  .guidance-heading {
-    max-width: 700px;
-    margin: 0 auto;
-  }
-
-  .col {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    max-height: 100%;
-
-    &.wide {
-      flex: 2
-    }
-
-    .block {
-      @include scrollbar-awesome();
-
-      overflow: auto;
-      min-height: 15%;
-      margin: 1rem;
-
-      b {
-        font-size: 1.2rem;
-      }
-
-
-      .rec:hover {
-        color: #ffba52;
-      }
-
-      .rec.expanded {
-        color: #ffdaa3 !important;
-      }
-
-      pre {
-        line-height: 1;
-        margin: 0;
-        padding: 0.2rem;
-      }
-    }
-  }
-}
 </style>

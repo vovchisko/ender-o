@@ -5,32 +5,38 @@ const PI = Math.PI
 
 export const DEST_TYPE = Object.freeze({
   SYSTEM: 'SYSTEM', // visit the system
-  BODY: 'BODY', // approach the body
+  APPROACH: 'APPROACH', // approach the body
   PLANETARY: 'PLANETARY', // planetary position
   DOCK: 'DOCK', // dock on the station
 })
 
 export const navi = reactive({
+  id: '',
   is_set: false,
   type: DEST_TYPE.SYSTEM,
+  approach: '',
+
   required: {
     ship_model: '',
     transport: '',
   },
+
   dest: {
     system: '',
     planet: '',
     docked: '',
-    lon: 0,
-    lat: 0,
-    alt: 0,
+    lon: null,
+    lat: null,
+    alt: null,
     min_dist: 0,
   },
 })
 
 export const navi_reset = () => {
+  navi.id = ''
   navi.is_set = false
   navi.type = DEST_TYPE.SYSTEM
+  navi.approach = ''
   navi.required.ship_model = ''
   navi.required.transport = ''
   navi.dest.system = ''
@@ -49,29 +55,54 @@ export const guidance = reactive({
   is_heading_err: false,
   heading: 0,
   distance: 0,
-  is_transport_ok: computed(() => {
-    return navi.required.transport
-        ? status.transport === navi.required.transport
-        : true
-  }),
-  is_system_ok: computed(() => {
-    return navi.dest.system
-        ? navi.dest.system === status.pos.system
-        : true
-  }),
-  is_planet_ok: computed(() => {
-    return navi.dest.planet
-        ? navi.dest.planet === status.pos.planet
-        : true
-  }),
-  is_pos_ok: computed(() => {
-    if (navi.type !== DEST_TYPE.PLANETARY) return true
+  reach_distance: computed(() => guidance.is_head_active
+      ? guidance.distance - navi.dest.min_dist
+      : null,
+  ),
+  is_complete: computed(() => {
     return (
-        (navi.dest.alt && navi.dest.alt >= status.pos.alt) &&
-        (navi.dest.min_dist >= guidance.distance)
+        guidance.objectives.transport !== false &&
+        guidance.objectives.system !== false &&
+        guidance.objectives.approach !== false &&
+        guidance.objectives.planet !== false &&
+        guidance.objectives.docked !== false &&
+        guidance.objectives.position !== false
     )
   }),
-
+  objectives: {
+    transport: computed(() => {
+      return navi.required.transport
+          ? status.transport === navi.required.transport
+          : null
+    }),
+    system: computed(() => {
+      return navi.dest.system
+          ? navi.dest.system === status.pos.system
+          : null
+    }),
+    approach: computed(() => {
+      return navi.approach
+          ? navi.approach === status.near.body
+          : null
+    }),
+    planet: computed(() => {
+      return navi.dest.planet
+          ? navi.dest.planet === status.pos.planet
+          : null
+    }),
+    docked: computed(() => {
+      return navi.dest.docked
+          ? navi.dest.docked === status.docked.name
+          : null
+    }),
+    position: computed(() => {
+      if (navi.type !== DEST_TYPE.PLANETARY) return null
+      return Boolean(
+          (navi.dest.lon && navi.dest.lat) &&
+          (navi.dest.min_dist >= guidance.distance),
+      )
+    }),
+  },
 })
 
 
@@ -135,6 +166,5 @@ watch([ status, navi ], () => {
     guidance.is_head_active = true
     upd_planetary_guidance()
   }
-
 }, { immediate: true, deep: true })
 

@@ -73,4 +73,11 @@
   }
   font-family: var(--typo-font-caps);
   text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+
+@mixin ellipsis () {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }

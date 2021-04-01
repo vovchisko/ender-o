@@ -66,13 +66,8 @@ export default {
   }
 
   .screen {
+    position: relative;
     overflow: hidden;
-    transition: all linear 200ms;
-
-    &-fx-blur {
-      // opacity: 0.8;
-      filter: blur(7px);
-    }
 
     &-fx-hide {
       display: none;

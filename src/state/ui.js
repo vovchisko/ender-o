@@ -1,4 +1,4 @@
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 
 import { status }      from '@/state/status'
 import { J_GUI_FOCUS } from '@/helpers/journal_api'
@@ -9,6 +9,13 @@ const SCREENS = Object.freeze({
   RACING: 'RACING',
   RACING_EDIT: 'RACING_EDIT',
 })
+
+export const UI_PANELS = {
+  CENTRAL_MAIN: 'CENTRAL_MAIN',
+  HEADING: 'HEADING',
+  LEFT_LONG: 'LEFT_LONG',
+  RIGHT_LONG: 'RIGHT_LONG'
+}
 
 const ui = reactive({
   screen: SCREENS.RACING_EDIT,
@@ -23,6 +30,18 @@ const ui = reactive({
     )
   }),
   hide_screen: computed(() => status.gui_focus > 0 && !ui.blur_screen && !ui.is_interact),
+})
+
+let last_ui_blur_screen = null
+let last_ui_hide_screen = null
+
+watch(ui, () => {
+  if (ui.blur_screen !== last_ui_blur_screen) {
+    document.body.setAttribute('fx-blur-screen', ui.blur_screen)
+  }
+  if (ui.hide_screen !== last_ui_hide_screen) {
+    document.body.setAttribute('fx-hide-screen', ui.blur_screen)
+  }
 })
 
 export { ui, SCREENS }

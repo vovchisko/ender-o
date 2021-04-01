@@ -36,13 +36,13 @@ import { J }             from '@/modules/journal'
 import { status }        from '@/state/status'
 import { ui }            from '@/state/ui'
 import { rec_dt, rec_t } from '@/helpers/formaters'
-import DestEditor        from '@/components/guide-editor'
+import NaviEditor        from '@/components/navi-editor'
 import GuidanceBar       from '@/components/guide-heading'
 import Racing            from '@/screens/racing'
 
 export default {
   name: 'development',
-  components: { Racing, GuidanceBar, DestEditor },
+  components: { Racing, GuidanceBar, NaviEditor },
   setup () {
     let counter = 0
     const records = reactive([])
@@ -95,7 +95,6 @@ export default {
     .block {
       @include scrollbar-awesome();
 
-      overflow: auto;
       min-height: 15%;
       margin: 1rem;
 

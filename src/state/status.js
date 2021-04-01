@@ -94,8 +94,7 @@ export function status_init () {
   })
 
   J.on('Docked', (ev) => {
-    status.docked.name = ev.StationName || ''
-    status.docked.name = ev.StationName || ''
+    status.docked.name = extract.stellar_name(ev.StationName)
     status.docked.type = ev.StationType || ''
     status.docked.market_id = ev.MarketID || 0
   })
@@ -128,7 +127,7 @@ export function status_init () {
     status.near.type = extract.body_type(ev.BodyType)
 
     if (ev.Docked) {
-      status.docked.name = ev.StationName || ''
+      status.docked.name = extract.stellar_name(ev.StationName)
       status.docked.type = ev.StationType || ''
       status.docked.market_id = ev.MarketID || 0
     }
