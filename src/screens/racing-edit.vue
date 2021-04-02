@@ -4,27 +4,20 @@
     <pre>{{ navi }}</pre>
   </div>
 
-  <!--
-    <div class="panel pan&#45;&#45;right-long">
-      <pre slot="right-long">{{ status }}</pre>
-    </div>
-  -->
-
   <div class="panel pan--heading-objectives" v-if="navi.is_set">
     <guide-info />
-
   </div>
+
   <div class="panel pan--heading"
        v-if="navi.is_set && navi.type === DEST_TYPE.PLANETARY">
     <guide-heading />
   </div>
-  <div v-if="show_edit" class="panel pan--central-main">
-    <navi-editor @apply="apply_destination" @cancel="show_edit = false" />
-  </div>
 
-  <div v-if="!show_edit" class="panel pan--bottom">
-    <button @click="clear_destination" v-if="navi.is_set">CLEAR</button>
-    <button @click="show_edit = true">EDIT</button>
+  <div class="panel pan--central-main">
+    <navi-editor
+        @apply="apply_destination"
+        @clear="clear_destination"
+    />
   </div>
 </template>
 
@@ -46,8 +39,7 @@ export default {
     return {
       show_edit,
       status, guidance, navi,
-      UI_PANELS,
-      DEST_TYPE,
+      UI_PANELS, DEST_TYPE,
     }
   },
   methods: {

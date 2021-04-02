@@ -1,62 +1,70 @@
 <template>
-  <div>
-    <button v-for="type in DEST_TYPE"
-            :class="{'active': type === new_navi.type}"
-            @click="new_navi.type=type">
-      {{ type }}
-    </button>
+  <div class="navi-edit">
+    <div class="tabs" v-if="show_edit">
+      <p>type:</p>
+      <button v-for="type in DEST_TYPE"
+              :class="{'active': type === form.type}"
+              @click="form.type=type">
+        {{ type }}
+      </button>
+    </div>
+
+    <div class="form" v-if="show_edit">
+      <p>destination criterias:
+        <button @click="pick_current">pick current</button>
+      </p>
+      <div class="fields">
+        <div v-if="can_select.transport" class="field field-transport">
+          <label>required transport</label>
+          <button v-for="type in TRANSPORT_TYPE"
+                  :value="type"
+                  @click="form.required.transport = type"
+                  :class="{'active': form.required.transport === type }"
+          >
+            {{ type }}
+          </button>
+        </div>
+        <label class="field"> target system
+          <input v-model="form.dest.system" type="text" />
+        </label>
+        <label class="field" v-if="can_select.approach"> approach (body or station)
+          <input v-model="form.approach" type="text" />
+        </label>
+        <label class="field" v-if="can_select.planet"> landable planet
+          <input v-model="form.dest.planet" type="text" />
+        </label>
+        <label class="field" v-if="can_select.station"> station to dock
+          <input v-model="form.dest.docked" type="text" />
+        </label>
+        <template v-if="can_select.coords">
+          <label class="field"> lon
+            <input v-model="form.dest.lon"
+                   type="number"
+                   min="-180"
+                   max="180"
+                   step="any" />
+          </label>
+          <label class="field"> lat
+            <input v-model="form.dest.lat" type="number" min="-90" max="90" step="any" />
+          </label>
+          <label class="field" v-if="can_select.altitude"> min altitude (meters)
+            <input v-model="form.dest.alt" type="number" />
+          </label>
+          <label class="field"> point radius (meters)
+            <input v-model="form.dest.min_dist" type="number" />
+          </label>
+        </template>
+      </div>
+    </div>
+    <div class="btns" :class="{'expanded': show_edit}">
+      <template v-if="show_edit">
+        <button @click="apply">apply</button>
+        <button @click="cancel">cancel</button>
+      </template>
+      <button @click="edit" v-if="!show_edit">edit navigation point</button>
+    </div>
   </div>
 
-  <hr />
-
-  <label v-if="can_select.transport"> transport
-    <select v-model="new_navi.required.transport">
-      <option v-for="type in TRANSPORT_TYPE" :value="type">{{ type }}</option>
-    </select>
-  </label>
-
-  <label> system <input v-model="new_navi.dest.system" type="text" /> </label>
-
-  <label v-if="can_select.approach"> approach (body or station)
-    <input v-model="new_navi.approach" type="text" />
-  </label>
-
-  <label v-if="can_select.planet"> planet
-    <input v-model="new_navi.dest.planet" type="text" />
-  </label>
-
-  <label v-if="can_select.station"> station
-    <input v-model="new_navi.dest.docked" type="text" />
-  </label>
-
-  <template v-if="can_select.coords">
-    <label> lon
-      <input v-model="new_navi.dest.lon" type="number" min="-180" max="180" step="any" />
-    </label>
-
-    <label> lat
-      <input v-model="new_navi.dest.lat" type="number" min="-90" max="90" step="any" />
-    </label>
-
-    <label v-if="can_select.altitude"> min alt
-      <input v-model="new_navi.dest.alt" type="number" />
-    </label>
-
-    <label> min_dist
-      <input v-model="new_navi.dest.min_dist" type="number" />
-    </label>
-  </template>
-
-  <hr>
-
-  <button @click="pick_current">pick current</button>
-  <button @click="apply">apply</button>
-  <button @click="cancel">cancel</button>
-
-  <hr>
-
-  <pre>{{ can_select }}</pre>
-  <pre>{{ new_navi }}</pre>
 </template>
 
 <script>
@@ -69,12 +77,13 @@ import { minmax }                  from '@/helpers/formaters'
 export default {
   name: 'navi-editor',
   setup () {
-    const new_navi = reactive({
+    const show_edit = ref(false)
+    const form = reactive({
       type: DEST_TYPE.PLANETARY,
       approach: '',
       required: {
         ship_model: '',
-        transport: TRANSPORT_TYPE.UNKNOWN,
+        transport: TRANSPORT_TYPE.SHIP,
       },
       dest: {
         system: '',
@@ -89,51 +98,68 @@ export default {
 
     const can_select = ref({
       planet: computed(() => (
-          [ DEST_TYPE.PLANETARY ].includes(new_navi.type)
+          [ DEST_TYPE.PLANETARY ].includes(form.type)
       )),
       station: computed(() => (
-          new_navi.type === DEST_TYPE.DOCK
+          form.type === DEST_TYPE.DOCK
       )),
       approach: computed(() => (
-          [ DEST_TYPE.APPROACH, DEST_TYPE.DOCK ].includes(new_navi.type)
+          [ DEST_TYPE.APPROACH, DEST_TYPE.DOCK ].includes(form.type)
       )),
       transport: computed(() => (
-          new_navi.type === DEST_TYPE.PLANETARY
+          form.type === DEST_TYPE.PLANETARY
       )),
       coords: computed(() => (
-          new_navi.type === DEST_TYPE.PLANETARY
+          form.type === DEST_TYPE.PLANETARY
       )),
       altitude: computed(() => (
-          new_navi.type === DEST_TYPE.PLANETARY &&
+          form.type === DEST_TYPE.PLANETARY &&
           [
             TRANSPORT_TYPE.SHIP,
             TRANSPORT_TYPE.FIGHTER,
-          ].includes(new_navi.required.transport)
+          ].includes(form.required.transport)
       )),
     })
 
-    new_navi.type = navi.type
-    new_navi.approach = navi.approach
-    Object.assign(new_navi.required, navi.required)
-    Object.assign(new_navi.dest, navi.dest)
+    form.type = navi.type
+    form.approach = navi.approach
+    Object.assign(form.required, navi.required)
+    Object.assign(form.dest, navi.dest)
 
-    return { can_select, new_navi, navi, DEST_TYPE, TRANSPORT_TYPE }
+    return {
+      can_select, form, show_edit,
+      navi, DEST_TYPE, TRANSPORT_TYPE,
+    }
   },
   emits: [ 'apply', 'cancel' ],
   methods: {
+    edit () {
+      this.pick_current()
+      this.show_edit = true
+    },
+
     cancel () {
-      this.$emit('cancel')
+      this.show_edit = false
+
+      this.form.type = DEST_TYPE.PLANETARY
+      this.form.approach = ''
+      this.form.required.transport = TRANSPORT_TYPE.SHIP
+      this.form.dest.system = ''
+      this.form.dest.planet = ''
+      this.form.dest.docked = ''
+      this.form.dest.lat = 0
+      this.form.dest.lon = 0
+      this.form.dest.alt = 0
+      this.form.dest.min_dist = 1000
     },
 
     apply () {
-      const n = this.new_navi
-
       const to_event = {
-        type: n.type,
+        type: this.form.type,
         approach: '',
         required: {
           ship_model: '', // will use it in future
-          transport: TRANSPORT_TYPE.UNKNOWN,
+          transport: TRANSPORT_TYPE.SHIP,
         },
         dest: {
           system: '',
@@ -146,66 +172,155 @@ export default {
         },
       }
 
-      to_event.dest.system = extract.stellar_name(n.dest.system)
+      to_event.dest.system = extract.stellar_name(this.form.dest.system)
 
       if (this.can_select.transport) {
-        to_event.required.transport = n.required.transport
+        to_event.required.transport = this.form.required.transport
       }
 
       if (this.can_select.approach) {
-        to_event.approach = extract.stellar_name(n.approach)
+        to_event.approach = extract.stellar_name(this.form.approach)
       }
 
       if (this.can_select.station) {
-        to_event.dest.docked = extract.stellar_name(n.dest.docked)
+        to_event.dest.docked = extract.stellar_name(this.form.dest.docked)
       }
 
       if (this.can_select.planet) {
-        to_event.dest.planet = extract.stellar_name(n.dest.planet)
+        to_event.dest.planet = extract.stellar_name(this.form.dest.planet)
       }
 
       if (this.can_select.coords) {
-        to_event.dest.lat = minmax(n.dest.lat, -90, 90)
-        to_event.dest.lon = minmax(n.dest.lon, -180, 180)
-        to_event.dest.min_dist = minmax(n.dest.min_dist, 200, 5000)
+        to_event.dest.lat = minmax(this.form.dest.lat, -90, 90)
+        to_event.dest.lon = minmax(this.form.dest.lon, -180, 180)
+        to_event.dest.min_dist = minmax(this.form.dest.min_dist, 200, 5000)
 
         if (this.can_select.altitude) {
-          to_event.dest.alt = minmax(n.dest.alt, 0, Infinity)
+          to_event.dest.alt = minmax(this.form.dest.alt, 0, Infinity)
         }
       }
 
       this.$emit('apply', to_event)
+
+      this.show_edit = false
     },
 
     pick_current () {
-      const n = this.new_navi
-
-      console.log(status.pos.alt)
-
       if (status.docked.name && status.docked.type) {
-        n.type = DEST_TYPE.DOCK
+        this.form.type = DEST_TYPE.DOCK
       } else if (status.pos.alt !== null) {
-        n.type = DEST_TYPE.PLANETARY
+        this.form.type = DEST_TYPE.PLANETARY
       } else if (status.near.body) {
-        n.type = DEST_TYPE.APPROACH
+        this.form.type = DEST_TYPE.APPROACH
       } else {
-        n.type = DEST_TYPE.SYSTEM
+        this.form.type = DEST_TYPE.SYSTEM
       }
 
-      n.approach = status.near.body
-      n.required.transport = status.transport
-      n.dest.system = status.pos.system
-      n.dest.planet = status.pos.planet
-      n.dest.docked = status.docked.name
-      n.dest.lat = status.pos.lat
-      n.dest.lon = status.pos.lon
-      n.dest.alt = status.pos.alt
-      n.dest.min_dist = 1000
+      this.form.approach = status.near.body
+      this.form.required.transport = status.transport
+      this.form.dest.system = status.pos.system
+      this.form.dest.planet = status.pos.planet
+      this.form.dest.docked = status.docked.name
+      this.form.dest.lat = status.pos.lat
+      this.form.dest.lon = status.pos.lon
+      this.form.dest.alt = status.pos.alt
+      this.form.dest.min_dist = 1000
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
+.navi-edit {
+  display: flex;
+  align-content: flex-start;
+
+  p {
+    @include typo-caps();
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2.5rem;
+  }
+
+  .tabs {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    & button {
+      display: block;
+      border: 0 none;
+      text-align: right;
+      width: 10rem;
+    }
+
+    & button:after {
+      content: '';
+      height: 0.5rem;
+      width: 0.5rem;
+      display: inline-block;
+      margin-left: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ff880055
+    }
+
+    & button.active:after {
+      background: #ff8800;
+      border-color: #ff8800ff
+    }
+  }
+
+  .form {
+    padding: 0 1rem;
+    border-right: 1px solid var(--pal-orange);
+    border-left: 1px solid var(--pal-orange);
+    margin: 0 1rem 0 0;
+    flex: 1;
+
+    .fields {
+      .field {
+        margin-bottom: 1rem;
+        display: block;
+
+        &-transport {
+          label {
+            @include typo-caps();
+            display: block;
+          }
+
+          button {
+            margin-right: 0.25em;
+            &:before {
+              content: '';
+              height: 0.5rem;
+              width: 0.5rem;
+              display: inline-block;
+              margin-right: 0.5rem;
+              border-radius: 0.5rem;
+              border: 1px solid #ff880055;
+            }
+
+            &.active:before {
+              background: #ff8800;
+              border-color: #ff8800ff
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .btns.expanded {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+
+    & button {
+      width: 10rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
 
 </style>

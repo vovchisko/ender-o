@@ -6,16 +6,27 @@ button {
   color: var(--ui-color-fg, orange);
   border: var(--ui-border-w, 1px) solid var(--ui-color-fg, orange);
   background: transparent;
+  outline: none;
 
   &.active {
     color: yellow;
     background: rgba(255, 128, 0, .1);
+  }
+
+  &:hover {
+    @include redshift-text(0.4);
+  }
+
+  &:active {
+    @include redshift-text(0.8);
+    background-color: rgba(255, 128, 0, 0.2);
   }
 }
 
 input[type=text],
 input[type=number],
 select {
+  display: block;
   font-family: EuroCaps, Titillium, sans-serif;
   font-size: var(--ui-font-size);
   padding: 0.5rem 1rem;
@@ -23,16 +34,23 @@ select {
   color: var(--ui-color-fg, orange);
   border: var(--ui-border-w, 1px) solid var(--ui-color-fg, orange);
   background: transparent;
+  box-sizing: border-box;
 
   &:focus {
     color: yellow;
     background: rgba(0, 0, 0, .5);
   }
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
 }
 
-label > * {
-  display: block;
-  &:focus-within {
+label {
+  @include typo-caps();
+  & > * {
+    display: block;
   }
 }
 
@@ -44,56 +62,7 @@ pre {
 
 
 [fx-blur-screen=true] .panel {
-   filter: blur(3px);
-}
-
-.panel {
-  @include scrollbar-awesome();
-
-  transition: all linear 240ms;
-  position: absolute;
-  // box-shadow: 0 0 0 1px #d900d955 inset;
-  overflow: auto;
-
-  &.pan--heading {
-    top: 16%;
-    left: 35%;
-    right: 35%;
-    // transform: perspective(30vw) rotateX(-15deg) scale(1.1);
-    perspective: 403px;
-  }
-
-  &.pan--heading-objectives {
-    bottom: 85%;
-    left: 35%;
-    right: 35%;
-  }
-
-  &.pan--central-main {
-    top: 23%;
-    right: 23%;
-    left: 23%;
-    bottom: 23%;
-  }
-
-  &.pan--bottom {
-    right: 20%;
-    left: 20%;
-    bottom: 5%;
-  }
-
-  &.pan--left-long {
-    top: 0%;
-    left: 0%;
-    width: 20%;
-    bottom: 0%;
-  }
-  &.pan--right-long {
-    top: 0%;
-    right: 0%;
-    width: 20%;
-    bottom: 0%;
-  }
+  filter: blur(3px);
 }
 
 

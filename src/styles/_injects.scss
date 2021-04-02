@@ -76,8 +76,31 @@
   letter-spacing: 0.01em;
 }
 
-@mixin ellipsis () {
+@mixin ellipsis() {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+
+@mixin glitch-box($depth: 0.35) {
+  text-shadow: -2px -4px 0 rgba(0, 255, 240, $depth), 2px 4px 0 rgba(255, 0, 230, $depth);
+  box-shadow: -2px -4px 0 0 rgba(0, 255, 240, $depth), 2px 4px 0 0 rgba(255, 0, 230, $depth);
+}
+
+@mixin glitch-text($depth: 0.35) {
+  text-shadow: -2px -4px 0 rgba(0, 255, 240, $depth), 2px 4px 0 rgba(255, 0, 230, $depth);
+}
+
+@mixin redshift-text($intense:0.25) {
+  text-shadow: -3px 0 1px rgba(255, 0, 0, $intense), 3px 0 1px rgba(255, 0, 0, $intense);
+}
+
+@mixin redshift-box($intense:0.25) {
+  box-shadow: -3px 0 1px rgba(255, 0, 0, $intense) inset, 3px 0 1px rgba(255, 0, 0, $intense) inset
+}
+
+@mixin redshift($intense:0.25) {
+  @include redshift-box($intense);
+  @include redshift-text($intense);
 }

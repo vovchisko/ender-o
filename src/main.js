@@ -14,6 +14,7 @@ require('@/assets/fonts/eurocaps.css')
 require('@/assets/fonts/titillium-web.css')
 require('@/styles/root.scss')
 require('@/styles/main.scss')
+require('@/styles/panels.scss')
 
 const stop_and_save = () => {
   window.removeEventListener('beforeunload', stop_and_save)

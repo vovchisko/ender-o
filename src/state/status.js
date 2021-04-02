@@ -15,11 +15,10 @@ const logger = create_logger('status', { bg: 'grey', text: 'white', log: true })
 let _last_raw = {}
 
 export const TRANSPORT_TYPE = {
-  UNKNOWN: '',
-  LEGS: 'LEGS',
+  SHIP: 'SHIP',
   SRV: 'SRV',
   FIGHTER: 'FIGHTER',
-  SHIP: 'SHIP',
+  LEGS: 'LEGS',
 }
 
 
@@ -32,7 +31,7 @@ export const status = reactive({
   fuel_reservouir: 0,
   cargo: 0,
   pips: [ 0, 0, 0 ],
-  transport: TRANSPORT_TYPE.UNKNOWN,
+  transport: TRANSPORT_TYPE.SHIP,
   near: {
     body_id: 0,
     body: '',
