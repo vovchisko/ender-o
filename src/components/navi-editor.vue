@@ -11,7 +11,7 @@
 
     <div class="form" v-if="show_edit">
       <p>destination criterias:
-        <button @click="pick_current">pick current</button>
+        <button @click="pick_from_current">pick current</button>
       </p>
       <div class="fields">
         <div v-if="can_select.transport" class="field field-transport">
@@ -62,13 +62,14 @@
         <button @click="cancel">cancel</button>
       </template>
       <button @click="edit" v-if="!show_edit">edit navigation point</button>
+      <button @click="navi_reset" v-if="show_edit">reset navi</button>
     </div>
   </div>
 
 </template>
 
 <script>
-import { DEST_TYPE, navi }         from '@/state/navi'
+import { DEST_TYPE, navi , navi_reset}         from '@/state/navi'
 import { status, TRANSPORT_TYPE }  from '@/state/status'
 import { computed, reactive, ref } from 'vue'
 import { extract }                 from '@/helpers/journal_api'
@@ -127,14 +128,18 @@ export default {
     Object.assign(form.dest, navi.dest)
 
     return {
-      can_select, form, show_edit,
+      can_select, form, show_edit, navi_reset,
       navi, DEST_TYPE, TRANSPORT_TYPE,
     }
   },
   emits: [ 'apply', 'cancel' ],
   methods: {
     edit () {
-      this.pick_current()
+      if (this.navi.is_set) {
+        this.pick_from_navi()
+      } else {
+        this.pick_from_current()
+      }
       this.show_edit = true
     },
 
@@ -193,7 +198,7 @@ export default {
       if (this.can_select.coords) {
         to_event.dest.lat = minmax(this.form.dest.lat, -90, 90)
         to_event.dest.lon = minmax(this.form.dest.lon, -180, 180)
-        to_event.dest.min_dist = minmax(this.form.dest.min_dist, 200, 5000)
+        to_event.dest.min_dist = minmax(this.form.dest.min_dist, 50, 5000)
 
         if (this.can_select.altitude) {
           to_event.dest.alt = minmax(this.form.dest.alt, 0, Infinity)
@@ -205,7 +210,15 @@ export default {
       this.show_edit = false
     },
 
-    pick_current () {
+    pick_from_navi () {
+      this.form.type = navi.type
+      this.form.approach = navi.approach
+      this.form.required.transport = status.transport
+      Object.assign(this.form.required, navi.required)
+      Object.assign(this.form.dest, navi.dest)
+    },
+
+    pick_from_current () {
       if (status.docked.name && status.docked.type) {
         this.form.type = DEST_TYPE.DOCK
       } else if (status.pos.alt !== null) {

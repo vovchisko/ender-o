@@ -1,5 +1,5 @@
 <template>
-  <div class="panel pan--left-long">
+  <div class="panel pan--left-long" v-if="ui.is_interact">
     <pre>{{ guidance }}</pre>
     <pre>{{ navi }}</pre>
   </div>
@@ -13,7 +13,7 @@
     <guide-heading />
   </div>
 
-  <div class="panel pan--central-main">
+  <div class="panel pan--central-main" v-if="ui.is_interact">
     <navi-editor
         @apply="apply_destination"
         @clear="clear_destination"
@@ -25,7 +25,7 @@
 import { ref }                                   from 'vue'
 import { status }                                from '@/state/status'
 import { DEST_TYPE, guidance, navi, navi_reset } from '@/state/navi'
-import { UI_PANELS }                             from '@/state/ui'
+import { UI_PANELS, ui }                             from '@/state/ui'
 import NaviEditor                                from '@/components/navi-editor'
 import GuideHeading                              from '@/components/guide-heading'
 import GuideInfo                                 from '@/components/guide-objective'
@@ -38,7 +38,7 @@ export default {
 
     return {
       show_edit,
-      status, guidance, navi,
+      status, guidance, navi, ui,
       UI_PANELS, DEST_TYPE,
     }
   },
