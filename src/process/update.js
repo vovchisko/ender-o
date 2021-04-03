@@ -1,5 +1,5 @@
-import { autoUpdater } from 'electron-updater'
-import { dialog }      from 'electron'
+import { autoUpdater }                 from 'electron-updater'
+import { dialog }                      from 'electron'
 import { ipc }                         from '@/process/ipc'
 import { IPC_EVENTS, UPDATE_INTERVAL } from '@/constants'
 

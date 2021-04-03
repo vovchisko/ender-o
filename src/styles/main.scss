@@ -1,1 +1,82 @@
-button { }
+button {
+  font-family: EuroCaps, Titillium, sans-serif;
+  font-size: var(--ui-font-size);
+  padding: 0.5rem 1rem;
+  text-transform: lowercase;
+  color: var(--ui-color-fg, orange);
+  border: var(--ui-border-w, 1px) solid var(--ui-color-fg, orange);
+  background: transparent;
+  outline: none;
+
+  &.active {
+    color: yellow;
+    background: rgba(255, 128, 0, .1);
+  }
+
+  &:hover {
+    @include redshift-text(0.4);
+  }
+
+  &:active {
+    @include redshift-text(0.8);
+    background-color: rgba(255, 128, 0, 0.2);
+  }
+}
+
+input[type=text],
+input[type=number],
+select {
+  display: block;
+  font-family: EuroCaps, Titillium, sans-serif;
+  font-size: var(--ui-font-size);
+  padding: 0.5rem 1rem;
+  text-transform: lowercase;
+  color: var(--ui-color-fg, orange);
+  border: var(--ui-border-w, 1px) solid var(--ui-color-fg, orange);
+  background: transparent;
+  box-sizing: border-box;
+
+  &:focus {
+    color: yellow;
+    background: rgba(0, 0, 0, .5);
+  }
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
+}
+
+label {
+  @include typo-caps();
+  & > * {
+    display: block;
+  }
+}
+
+pre {
+  line-height: 1;
+  margin: 0;
+  padding: 0.2rem;
+}
+
+
+[fx-blur-screen=true] .panel {
+  filter: blur(3px);
+}
+
+
+@keyframes blinker {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0;
+  }
+  30.1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}

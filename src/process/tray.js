@@ -16,9 +16,17 @@ class TrayIcon {
   build_menu () {
     const contextMenu = Menu.buildFromTemplate([
       { label: 'Discord', type: 'normal', click: () => shell.openExternal(URL_DISCORD) },
-      { label: 'Issues on GitHub', type: 'normal', click: () => shell.openExternal(URL_ISSUES) },
+      {
+        label: 'Issues on GitHub',
+        type: 'normal',
+        click: () => shell.openExternal(URL_ISSUES),
+      },
       { label: '', type: 'separator' },
-      { label: 'Quit', type: 'normal', click: () => ipc.send(IPC_EVENTS.TRAY_QUIT_REQUEST) },
+      {
+        label: 'Quit',
+        type: 'normal',
+        click: () => ipc.send(IPC_EVENTS.TRAY_QUIT_REQUEST),
+      },
     ])
     this.tray.setToolTip('Ender-O')
     this.tray.setContextMenu(contextMenu)

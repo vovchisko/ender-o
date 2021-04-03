@@ -10,6 +10,7 @@ class Settings {
     this.state = {
       journal_path: '',
       cmdr: '',
+      fid: '',
       language: '',
       game_version: '',
       last_journal: -1,

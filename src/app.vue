@@ -1,30 +1,37 @@
 <template>
   <div class="app">
-    <div class="header">
-      <button v-for="screen in SCREENS" @click="show_screen(screen)">
-        {{ screen }}
-      </button>
+    <app-header class="header" />
 
-      <button class="quit" @click="quit">quit</button>
-    </div>
+    <main
+        :class="{'screen-fx-blur': ui.blur_screen, 'screen-fx-hide': ui.hide_screen }"
+        class="screen"
+    >
+      <devtools v-if="ui.screen === SCREENS.DEVTOOLS" />
+      <exploration v-if="ui.screen === SCREENS.EXPLORATION" />
+      <racing v-if="ui.screen === SCREENS.RACING" />
+      <racing-edit v-if="ui.screen === SCREENS.RACING_EDIT" />
+    </main>
 
-    <development v-if="ui.screen === SCREENS.DEVELOPMENT" />
-    <exploration v-if="ui.screen === SCREENS.EXPLORATION" />
-    <racing v-if="ui.screen === SCREENS.RACING" />
+    <app-footer class="footer" />
   </div>
 </template>
 
 <script>
 import { SCREENS, ui } from '@/state/ui'
 
-import Development from '@/screens/development'
+import Devtools    from '@/screens/devtools'
 import Exploration from '@/screens/exploration'
 import Racing      from '@/screens/racing'
-import { ipcr }    from '@/modules/ipcr'
+import AppHeader   from '@/components/app-header'
+import AppFooter   from '@/components/app-footer'
+import RacingEdit  from '@/screens/racing-edit'
 
 export default {
   components: {
-    Development,
+    RacingEdit,
+    AppHeader,
+    AppFooter,
+    Devtools,
     Exploration,
     Racing,
   },
@@ -32,39 +39,57 @@ export default {
   setup () {
     return { ui, SCREENS }
   },
-
-  methods: {
-    show_screen (s) {
-      this.ui.screen = s
-    },
-    quit () {
-      ipcr.quit()
-    },
-  },
 }
 </script>
 
-<style lang="scss">
-html, body { background: transparent; }
+<style lang="scss" scoped>
+.app {
+  position: absolute;
+  top: var(--lt-screen-pad);
+  right: var(--lt-screen-pad);
+  bottom: var(--lt-screen-pad);
+  left: var(--lt-screen-pad);
 
+  display: grid;
+  grid-gap: 5px;
+  grid-template-rows:
+    minmax(0, var(--lt-header-h))
+    auto
+    minmax(0, var(--lt-footer-h));
 
-body {
-  font-family: Titillium, sans-serif;
-  color: #ddd;
+  .header, .footer, .screen {
+    overflow: hidden;
+  }
+
+  .header {
+    height: var(--lt-header-h);
+  }
+
+  .screen {
+    position: relative;
+    overflow: hidden;
+
+    &-fx-hide {
+      display: none;
+    }
+  }
+
+  .footer {
+    height: var(--lt-footer-h);
+  }
 }
+</style>
 
-.caps {
-  font-family: EuroCaps, sans-serif;
+<!-- GLOBAL OVERLAY FEEDBACK -->
+<style lang="scss">
+body {
+  border-top: 3px solid transparent;
 }
 
 body[overlay='on'] {
-  border-top: 2px solid transparent;
-  padding-top: 1rem;
-
   &[interact='on'] {
-    background: rgba(0, 0, 0, .45);
-    border-top: 2px solid rgba(255, 165, 0, 0.45);
-    overflow-x: hidden
+    border-top: 3px solid rgba(255, 165, 0, 0.5);
+    background: rgba(0, 0, 0, .55);
   }
 
   &[interact='off'] {
@@ -74,19 +99,5 @@ body[overlay='on'] {
 
 body[overlay='off'] {
   background: #222 !important;
-}
-</style>
-
-<style lang="scss" scoped>
-.app {
-  &__header {
-    &-menu-btn {
-      border: 0 none;
-
-      &_quit {
-        margin-left: auto;
-      }
-    }
-  }
 }
 </style>

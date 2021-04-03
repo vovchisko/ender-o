@@ -1,9 +1,9 @@
 @font-face {
-    font-family: 'EuroCaps';
-    src: url('EuroCaps.woff2') format('woff2'),
-        url('EuroCaps.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+  font-family: 'EuroCaps';
+  src: url('EuroCaps.woff2') format('woff2'),
+  url('EuroCaps.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 

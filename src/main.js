@@ -5,11 +5,16 @@ import { IPC_EVENTS }  from '@/constants'
 import { settings }    from '@/modules/settings'
 import { J }           from '@/modules/journal'
 import { ipcr }        from '@/modules/ipcr'
+import { ui }          from '@/state/ui'
 import { status_init } from '@/state/status'
-import { ui } from '@/state/ui'
+import { cmdr_init }   from '@/state/cmdr'
 
+require('@/styles/reset.scss')
 require('@/assets/fonts/eurocaps.css')
 require('@/assets/fonts/titillium-web.css')
+require('@/styles/root.scss')
+require('@/styles/main.scss')
+require('@/styles/panels.scss')
 
 const stop_and_save = () => {
   window.removeEventListener('beforeunload', stop_and_save)
@@ -28,6 +33,7 @@ function main () {
     await J.go()
   })
 
+  cmdr_init()
   status_init()
 
   createApp(app).mount('#app')
@@ -54,5 +60,8 @@ function main () {
     ipcr.quit()
   })
 }
+
+
+
 
 main()

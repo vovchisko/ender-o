@@ -5,15 +5,27 @@ export function create_logger (pre, { bg = 'black', text = 'white', ipc = false,
   const decor = [ `%c ${ pre } `, `background: ${ bg }; color:${ text }` ]
   return {
     log: function () {
-      if (ipc) ipcr.send(IPC_EVENTS.LOG, { module: pre, level: 'log', arguments: [ ...arguments ] })
+      if (ipc) ipcr.send(IPC_EVENTS.LOG, {
+        module: pre,
+        level: 'log',
+        arguments: [ ...arguments ],
+      })
       if (log) console.log(...decor, ...arguments)
     },
     warn: function () {
-      if (ipc) ipcr.send(IPC_EVENTS.LOG, { module: pre, level: 'warn', arguments: [ ...arguments ] })
+      if (ipc) ipcr.send(IPC_EVENTS.LOG, {
+        module: pre,
+        level: 'warn',
+        arguments: [ ...arguments ],
+      })
       if (log) console.warn(...decor, ...arguments)
     },
     error: function () {
-      if (ipc) ipcr.send(IPC_EVENTS.LOG, { module: pre, level: 'error', arguments: [ ...arguments ] })
+      if (ipc) ipcr.send(IPC_EVENTS.LOG, {
+        module: pre,
+        level: 'error',
+        arguments: [ ...arguments ],
+      })
       if (log) console.error(...decor, ...arguments)
     },
   }

@@ -1,0 +1,26 @@
+div, p, section, span,
+main, header, footer,
+li, ul, em {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  font-family: Titillium, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #ddd;
+  background: transparent;
+}
+
+:root {
+  @include typo(200);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: unset;
+  font-weight: unset;
+  margin: 0;
+  padding: 0;
+}

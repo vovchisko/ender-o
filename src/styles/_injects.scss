@@ -33,16 +33,16 @@
   }
 
   &::-webkit-scrollbar {
-    width: 0.5em;
-    height: 0.5em;
-    border-radius: 0.25em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 0.25rem;
     background-color: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: var(--scroll-color-thump, orange);
     border: 1px solid transparent;
-    border-radius: 1em;
+    border-radius: 1rem;
   }
 
   &:hover::-webkit-scrollbar-thumb {
@@ -60,4 +60,47 @@
   &::-webkit-scrollbar-thumb {
     background: transparent;
   }
+}
+
+
+@mixin typo($h) {
+  font-size: var(--typo-h#{$h});
+}
+
+@mixin typo-caps($h:false) {
+  @if ($h) {
+    font-size: var(--typo-h#{$h});
+  }
+  font-family: var(--typo-font-caps);
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+
+@mixin ellipsis() {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+@mixin glitch-box($depth: 0.35) {
+  text-shadow: -2px -4px 0 rgba(0, 255, 240, $depth), 2px 4px 0 rgba(255, 0, 230, $depth);
+  box-shadow: -2px -4px 0 0 rgba(0, 255, 240, $depth), 2px 4px 0 0 rgba(255, 0, 230, $depth);
+}
+
+@mixin glitch-text($depth: 0.35) {
+  text-shadow: -2px -4px 0 rgba(0, 255, 240, $depth), 2px 4px 0 rgba(255, 0, 230, $depth);
+}
+
+@mixin redshift-text($intense:0.25) {
+  text-shadow: -3px 0 1px rgba(255, 0, 0, $intense), 3px 0 1px rgba(255, 0, 0, $intense);
+}
+
+@mixin redshift-box($intense:0.25) {
+  box-shadow: -3px 0 1px rgba(255, 0, 0, $intense) inset, 3px 0 1px rgba(255, 0, 0, $intense) inset
+}
+
+@mixin redshift($intense:0.25) {
+  @include redshift-box($intense);
+  @include redshift-text($intense);
 }

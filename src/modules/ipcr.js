@@ -5,7 +5,12 @@ import { create_logger }           from '@/modules/logger'
 import { J }                       from '@/modules/journal'
 import { settings }                from '@/modules/settings'
 
-const logger = create_logger('bg', { bg: '#822', text: 'white', ipc: false, local: false })
+const logger = create_logger('bg', {
+  bg: '#822',
+  text: 'white',
+  ipc: false,
+  local: false,
+})
 
 class IPCR extends EE3 {
   constructor () {

@@ -31,8 +31,7 @@ module.exports = {
       sass: {
         sourceMap: true,
         prependData: `
-          @import "@/styles/vars.scss";
-          @import "@/styles/mixins.scss";
+          @import "@/styles/_injects.scss";
         `,
       },
     },

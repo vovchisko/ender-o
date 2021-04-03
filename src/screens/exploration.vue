@@ -1,6 +1,5 @@
 <template>
-  <h3>EXPLORATION: [IN PROGRESS]</h3>
-
+  <p>EXPLORATION: [WORK IN PROGRESS]</p>
 </template>
 
 <script>
@@ -9,6 +8,8 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-
+<style lang="scss" scoped>
+p {
+  @include typo(200);
+}
 </style>

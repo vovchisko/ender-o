@@ -1,0 +1,122 @@
+<template>
+  <div class="cols">
+    <div class="col">
+      <div class="block">
+        <b class="caps">DATA</b>
+        <div v-for="e in data" :class="e.expanded ? 'expanded':''" class="rec">
+          <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{
+              e.event }}</pre>
+          <pre v-if="e.expanded">{{ e.rec }}</pre>
+        </div>
+      </div>
+      <div class="block">
+        <b class="caps">JOURNAL</b>
+        <div v-for="e in records" class="rec">
+          <pre @click="e.expanded = !e.expanded">{{ rec_t(e.rec.timestamp) }} :: {{
+              e.event }}</pre>
+          <pre v-if="e.expanded">{{ e.rec }}</pre>
+        </div>
+      </div>
+    </div>
+    <div class="col wide">
+      test
+    </div>
+    <div class="col">
+      <div class="block">
+        <b class="caps">COMPUETD STATUS</b>
+        <pre>{{ status }}</pre>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { reactive }      from 'vue'
+import { J }             from '@/modules/journal'
+import { status }        from '@/state/status'
+import { ui }            from '@/state/ui'
+import { rec_dt, rec_t } from '@/helpers/formaters'
+import NaviEditor        from '@/components/navi-editor'
+import GuidanceBar       from '@/components/guide-heading'
+import Racing            from '@/screens/racing'
+
+export default {
+  name: 'development',
+  components: { Racing, GuidanceBar, NaviEditor },
+  setup () {
+    let counter = 0
+    const records = reactive([])
+    const data = reactive({})
+
+    J.on('record', (event, rec) => {
+      records.unshift({ event, rec, expanded: false, id: ++counter })
+      if (records.length > 100) records.length = 100
+    })
+
+    J.on('data', (event, rec) => {
+      if (!data[event]) {
+        data[event] = { event, rec, expanded: false, id: event }
+      } else {
+        data[event].rec = rec
+      }
+    })
+
+    return { status, records, data, ui, rec_t, rec_dt }
+  },
+}
+</script>
+<style lang="scss" scoped="true">
+.screen-title {
+  @include typo-caps(400);
+}
+
+.cols {
+  display: flex;
+
+  justify-content: space-between;
+  max-height: 100%;
+  color: orange;
+
+  .guidance-heading {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .col {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    max-height: 100%;
+
+    &.wide {
+      flex: 2
+    }
+
+    .block {
+      @include scrollbar-awesome();
+
+      min-height: 15%;
+      margin: 1rem;
+
+      b {
+        font-size: 1.2rem;
+      }
+
+
+      .rec:hover {
+        color: #ffba52;
+      }
+
+      .rec.expanded {
+        color: #ffdaa3 !important;
+      }
+
+      pre {
+        line-height: 1;
+        margin: 0;
+        padding: 0.2rem;
+      }
+    }
+  }
+}
+</style>

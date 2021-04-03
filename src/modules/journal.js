@@ -13,7 +13,19 @@ const REG_KEY = '{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}'
 const REG_QUERY = `reg query "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders" /v ` + REG_KEY
 const DEFAULT_DIR = path.join(os.homedir(), 'Saved Games\\Frontier Developments\\Elite Dangerous')
 const ENDER_CMD_PREFIX = '/ender'
-const IGNORED_JOURNAL_RECORDS = [ 'Music', 'ReceiveText', 'SendText', 'Market' ]
+const IGNORED_JOURNAL_RECORDS = [
+  'Music',
+  'ReceiveText',
+  'SendText',
+  'Market',
+  'FSSSignalDiscovered',
+  'ApproachSettlement',
+  'Friends',
+  'NpcCrewPaidWage',
+  'RepairAll',
+  'RefuelAll',
+  'BuyAmmo',
+]
 
 const DATA_FILES = [
   'Status.json',
@@ -161,13 +173,17 @@ class Journal extends EE3 {
 
     const caret_num = _jnum(jfiles.find(fn => fn.includes('.01.')))
 
-    logger.log('journal caret:', caret_num)
+    settings.state.last_journal = caret_num
+    settings.state.last_record = -1
+
+    logger.log('journal caret:', caret_num, 'rec: ', -1)
 
     jfiles.forEach(fname => {
       if (caret_num > _jnum(fname)) {
         this.files[fname].changed = caret_num <= _jnum(fname)
       }
     })
+
   }
 
   get_last_journal () {
@@ -247,9 +263,12 @@ class Journal extends EE3 {
       if (_is_ignored_record(rec)) continue
       if (stateHookEvents.includes(rec.event)) this.state_update_rec(rec)
 
-      this.emit(rec.event, rec)
-      this.emit('record', rec.event, rec)
-
+      try {
+        this.emit(rec.event, rec)
+        this.emit('record', rec.event, rec)
+      } catch (err) {
+        console.error(err)
+      }
       events_count++
     }
 
@@ -304,14 +323,30 @@ class Journal extends EE3 {
 
     if (!rec) return
 
-    this.emit(rec.event, rec)
-    this.emit('data', rec.event, rec)
+
+    try {
+      this.emit(rec.event, rec)
+      this.emit('data', rec.event, rec)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   state_update_rec (rec) {
-    if (rec.event === 'NewCommander') {settings.state.cmdr = rec.Name}
-    if (rec.event === 'Commander') {settings.state.cmdr = rec.Name}
-    if (rec.event === 'LoadGame') {settings.state.cmdr = rec.Commander}
+    if (rec.event === 'NewCommander') {
+      if (rec.Name) settings.state.cmdr = rec.Name
+    }
+
+    if (rec.event === 'Commander') {
+      if (rec.Name) settings.state.cmdr = rec.Name
+      if (rec.FID) settings.state.fid = rec.FID
+    }
+
+    if (rec.event === 'LoadGame') {
+      if (rec.Commander) settings.state.cmdr = rec.Commander
+      if (rec.FID) settings.state.fid = rec.FID
+
+    }
     if (rec.event === 'Fileheader') {
       settings.state.language = rec.language
       settings.state.game_version = rec.gameversion

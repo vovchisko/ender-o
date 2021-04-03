@@ -12,7 +12,7 @@ export const IPC_EVENTS = Object.freeze({
   GLOBAL_KEY_TRIGGER: 'GLOBAL_KEY_TRIGGER', // bg >> ui
   LOG: 'LOG', // bg -> ui
   QUIT: 'QUIT', // ui -> bg
-  TRAY_QUIT_REQUEST: 'TRAY_QUIT_REQUEST' // bg -> ui
+  TRAY_QUIT_REQUEST: 'TRAY_QUIT_REQUEST', // bg -> ui
 })
 
 export const ED_WIN_TITLE = 'Elite - Dangerous (CLIENT)'
