@@ -10,45 +10,40 @@ export const DEST_TYPE = Object.freeze({
   DOCK: 'DOCK', // dock on the station
 })
 
-export const navi = reactive({
-  id: '',
-  is_set: false,
-  type: DEST_TYPE.SYSTEM,
-  approach: '',
-
-  required: {
-    ship_model: '',
-    transport: '',
-  },
-
-  dest: {
-    system: '',
-    planet: '',
-    docked: '',
-    lon: null,
-    lat: null,
-    alt: null,
-    min_dist: 0,
-  },
-})
-
-export const navi_reset = () => {
-  navi.id = ''
-  navi.is_set = false
-  navi.type = DEST_TYPE.SYSTEM
-  navi.approach = ''
-  navi.required.ship_model = ''
-  navi.required.transport = ''
-  navi.dest.system = ''
-  navi.dest.planet = ''
-  navi.dest.docked = ''
-  navi.dest.lon = null
-  navi.dest.lat = null
-  navi.dest.alt = null
-  navi.dest.min_dist = 0
+export function blank_navi () {
+  return {
+    id: '',
+    type: DEST_TYPE.SYSTEM,
+    approach: '',
+    required: {
+      ship_model: '',
+      transport: '',
+    },
+    dest: {
+      system: '',
+      planet: '',
+      docked: '',
+      lon: null,
+      lat: null,
+      alt: null,
+      min_dist: 0,
+    },
+  }
 }
 
-// outter buffer vars
+export function apply_navi (from, to, skip_id = false){
+  if(!skip_id) {
+    to.id = from.id
+  }
+
+  to.type = from.type
+  to.approach = from.approach
+
+  Object.assign(to.required, from.required)
+  Object.assign(to.dest, from.dest)
+}
+
+export const navi = reactive(blank_navi())
 
 export const guidance = reactive({
   is_head_active: false,
@@ -59,16 +54,6 @@ export const guidance = reactive({
       ? guidance.distance - navi.dest.min_dist
       : null,
   ),
-  is_complete: computed(() => {
-    return (
-        guidance.objectives.transport !== false &&
-        guidance.objectives.system !== false &&
-        guidance.objectives.approach !== false &&
-        guidance.objectives.planet !== false &&
-        guidance.objectives.docked !== false &&
-        guidance.objectives.position !== false
-    )
-  }),
   objectives: {
     transport: computed(() => {
       return navi.required.transport
@@ -103,6 +88,26 @@ export const guidance = reactive({
       )
     }),
   },
+  is_active: computed(() => {
+    return (
+        guidance.objectives.transport !== null ||
+        guidance.objectives.system !== null ||
+        guidance.objectives.approach !== null ||
+        guidance.objectives.planet !== null ||
+        guidance.objectives.docked !== null ||
+        guidance.objectives.position !== null
+    )
+  }),
+  is_complete: computed(() => {
+    return (
+        guidance.objectives.transport !== false &&
+        guidance.objectives.system !== false &&
+        guidance.objectives.approach !== false &&
+        guidance.objectives.planet !== false &&
+        guidance.objectives.docked !== false &&
+        guidance.objectives.position !== false
+    )
+  }),
 })
 
 
