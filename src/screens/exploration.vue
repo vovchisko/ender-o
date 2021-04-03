@@ -1,5 +1,5 @@
 <template>
-  <p>EXPLORATION: [IN PROGRESS]</p>
+  <p>EXPLORATION: [WORK IN PROGRESS]</p>
 </template>
 
 <script>

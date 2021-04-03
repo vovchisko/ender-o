@@ -58,7 +58,7 @@ import { ui }             from '@/state/ui'
 import { guidance, navi } from '@/state/navi'
 
 export default {
-  name: 'guide-info',
+  name: 'guide-objective',
   data () { return { ph: '- not set -' }},
   setup () {
     return { guidance, navi, ui }

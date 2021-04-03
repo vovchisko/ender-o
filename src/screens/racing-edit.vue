@@ -5,7 +5,7 @@
   </div>
 
   <div class="panel pan--heading-objectives" v-if="navi.is_set">
-    <guide-info />
+    <guide-objective />
   </div>
 
   <div class="panel pan--heading"
@@ -25,14 +25,14 @@
 import { ref }                                   from 'vue'
 import { status }                                from '@/state/status'
 import { DEST_TYPE, guidance, navi, navi_reset } from '@/state/navi'
-import { UI_PANELS, ui }                             from '@/state/ui'
+import { ui, UI_PANELS }                         from '@/state/ui'
 import NaviEditor                                from '@/components/navi-editor'
 import GuideHeading                              from '@/components/guide-heading'
-import GuideInfo                                 from '@/components/guide-objective'
+import GuideObjective                            from '@/components/guide-objective'
 
 export default {
   name: 'racing-edit',
-  components: { GuideInfo, GuideHeading, NaviEditor },
+  components: { GuideObjective, GuideHeading, NaviEditor },
   setup () {
     const show_edit = ref(false)
 
