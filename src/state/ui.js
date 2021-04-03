@@ -5,8 +5,8 @@ import { J_GUI_FOCUS } from '@/helpers/journal_api'
 
 const SCREENS = Object.freeze({
   DEVTOOLS: 'DEVTOOLS',
-  EXPLORATION: 'EXPLORATION',
-  RACING: 'RACING',
+  // EXPLORATION: 'EXPLORATION',
+  // RACING: 'RACING',
   RACING_EDIT: 'RACING_EDIT',
 })
 
