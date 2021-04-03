@@ -21,6 +21,15 @@ button {
     @include redshift-text(0.8);
     background-color: rgba(255, 128, 0, 0.2);
   }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:active,
+  &:disabled:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+  }
 }
 
 input[type=text],
@@ -60,11 +69,9 @@ pre {
   padding: 0.2rem;
 }
 
-
 [fx-blur-screen=true] .panel {
   filter: blur(3px);
 }
-
 
 @keyframes blinker {
   0% {

@@ -1,7 +1,9 @@
 <template>
   <div class="navi-edit">
-    <div class="tabs" v-if="show_edit">
-      <p>type:</p>
+    <div class="tabs">
+      <div class="col-title">
+        <p>type:</p>
+      </div>
       <button v-for="type in DEST_TYPE"
               :class="{'active': type === form.type}"
               @click="form.type=type">
@@ -9,10 +11,12 @@
       </button>
     </div>
 
-    <div class="form" v-if="show_edit">
-      <p>destination criterias:
-        <button @click="pick_from_current">pick current</button>
-      </p>
+    <div class="form">
+      <div class="col-title">
+        <p>destination criterias:</p>
+        <button @click="pick_from_current">right here</button>
+        <button @click="pick_from_navi">restore</button>
+      </div>
       <div class="fields">
         <div v-if="can_select.transport" class="field field-transport">
           <label>required transport</label>
@@ -38,11 +42,7 @@
         </label>
         <template v-if="can_select.coords">
           <label class="field"> lon
-            <input v-model="form.dest.lon"
-                   type="number"
-                   min="-180"
-                   max="180"
-                   step="any" />
+            <input v-model="form.dest.lon" type="number" min="-180" max="180" step="any" />
           </label>
           <label class="field"> lat
             <input v-model="form.dest.lat" type="number" min="-90" max="90" step="any" />
@@ -56,29 +56,28 @@
         </template>
       </div>
     </div>
-    <div class="btns" :class="{'expanded': show_edit}">
-      <template v-if="show_edit">
-        <button @click="apply">apply</button>
-        <button @click="cancel">cancel</button>
-      </template>
-      <button @click="edit" v-if="!show_edit">edit navigation point</button>
-      <button @click="navi_reset" v-if="show_edit">reset navi</button>
+
+    <div class="btns">
+      <button @click="apply">apply</button>
+      <button @click="cancel">cancel</button>
+      <br/>
+      <button @click="navi_reset">reset navi</button>
     </div>
   </div>
-
 </template>
 
 <script>
-import { DEST_TYPE, navi , navi_reset}         from '@/state/navi'
-import { status, TRANSPORT_TYPE }  from '@/state/status'
 import { computed, reactive, ref } from 'vue'
-import { extract }                 from '@/helpers/journal_api'
-import { minmax }                  from '@/helpers/formaters'
+
+import { DEST_TYPE, navi, navi_reset } from '@/state/navi'
+import { status, TRANSPORT_TYPE }      from '@/state/status'
+import { extract }                     from '@/helpers/journal_api'
+import { minmax }                      from '@/helpers/formaters'
 
 export default {
   name: 'navi-editor',
+  emits: [ 'apply', 'canel', 'clear' ],
   setup () {
-    const show_edit = ref(false)
     const form = reactive({
       type: DEST_TYPE.PLANETARY,
       approach: '',
@@ -122,48 +121,32 @@ export default {
       )),
     })
 
-    form.type = navi.type
-    form.approach = navi.approach
-    Object.assign(form.required, navi.required)
-    Object.assign(form.dest, navi.dest)
+    const pick_from_navi = () => {
+      form.type = navi.type
+      form.approach = navi.approach
+      form.required.transport = navi.required.transport
+      Object.assign(form.required, navi.required)
+      Object.assign(form.dest, navi.dest)
+    }
+
+    pick_from_navi()
 
     return {
-      can_select, form, show_edit, navi_reset,
+      can_select, form, navi_reset,
       navi, DEST_TYPE, TRANSPORT_TYPE,
+      pick_from_navi,
     }
   },
-  emits: [ 'apply', 'cancel' ],
   methods: {
-    edit () {
-      if (this.navi.is_set) {
-        this.pick_from_navi()
-      } else {
-        this.pick_from_current()
-      }
-      this.show_edit = true
-    },
-
     cancel () {
-      this.show_edit = false
-
-      this.form.type = DEST_TYPE.PLANETARY
-      this.form.approach = ''
-      this.form.required.transport = TRANSPORT_TYPE.SHIP
-      this.form.dest.system = ''
-      this.form.dest.planet = ''
-      this.form.dest.docked = ''
-      this.form.dest.lat = 0
-      this.form.dest.lon = 0
-      this.form.dest.alt = 0
-      this.form.dest.min_dist = 1000
+      this.$emit('cancel')
     },
-
     apply () {
       const to_event = {
         type: this.form.type,
         approach: '',
         required: {
-          ship_model: '', // will use it in future
+          ship_model: '', // will be used in the future
           transport: TRANSPORT_TYPE.SHIP,
         },
         dest: {
@@ -206,18 +189,7 @@ export default {
       }
 
       this.$emit('apply', to_event)
-
-      this.show_edit = false
     },
-
-    pick_from_navi () {
-      this.form.type = navi.type
-      this.form.approach = navi.approach
-      this.form.required.transport = status.transport
-      Object.assign(this.form.required, navi.required)
-      Object.assign(this.form.dest, navi.dest)
-    },
-
     pick_from_current () {
       if (status.docked.name && status.docked.type) {
         this.form.type = DEST_TYPE.DOCK
@@ -237,8 +209,8 @@ export default {
       this.form.dest.lat = status.pos.lat
       this.form.dest.lon = status.pos.lon
       this.form.dest.alt = status.pos.alt
-      this.form.dest.min_dist = 1000
-    },
+      this.form.dest.min_dist = 500
+    }
   },
 }
 </script>
@@ -248,13 +220,21 @@ export default {
   display: flex;
   align-content: flex-start;
 
-  p {
+  .col-title {
     @include typo-caps();
     margin-bottom: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 2.5rem;
+
+    p {
+      margin-right: auto;
+    }
+
+    button {
+      margin-left: 0.5em;
+    }
   }
 
   .tabs {
@@ -315,7 +295,7 @@ export default {
 
             &.active:before {
               background: #ff8800;
-              border-color: #ff8800ff
+              border-color: #ff8800ff;
             }
           }
         }
@@ -323,7 +303,7 @@ export default {
     }
   }
 
-  .btns.expanded {
+  .btns {
     margin-top: 0;
     display: flex;
     flex-direction: column;

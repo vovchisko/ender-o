@@ -15,9 +15,12 @@
 
   <div class="panel pan--central-main" v-if="ui.is_interact">
     <navi-editor
+        v-if="show_edit"
         @apply="apply_destination"
+        @cancel="show_edit = false"
         @clear="clear_destination"
     />
+    <button v-else @click="show_edit = true" >edit navigation point</button>
   </div>
 </template>
 
@@ -45,7 +48,6 @@ export default {
   methods: {
     apply_destination (new_navi) {
       navi.is_set = true
-
       navi.type = new_navi.type
       navi.approach = new_navi.approach
       Object.assign(navi.required, new_navi.required)
