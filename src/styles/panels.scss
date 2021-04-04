@@ -3,14 +3,13 @@
 
   transition: all linear 240ms;
   position: absolute;
-  // box-shadow: 0 0 0 1px #d900d955 inset;
+  box-shadow: 0 0 0 1px #d900d955 inset;
   overflow: auto;
 
   &.pan--heading {
     top: 16%;
     left: 35%;
     right: 35%;
-    // transform: perspective(30vw) rotateX(-15deg) scale(1.1);
     perspective: 403px;
   }
 
@@ -22,8 +21,8 @@
 
   &.pan--central-main {
     top: 27%;
-    left: 35%;
-    right: 35%;
+    left: 33%;
+    right: 33%;
     bottom: 23%;
   }
 

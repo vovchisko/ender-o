@@ -1,3 +1,5 @@
+import Signal from 'a-signal'
+
 import { computed, reactive, watch } from 'vue'
 import { status }                    from '@/state/status'
 
@@ -13,6 +15,7 @@ export const DEST_TYPE = Object.freeze({
 export function blank_navi () {
   return {
     id: '',
+    label: '',
     type: DEST_TYPE.SYSTEM,
     approach: '',
     required: {
@@ -31,16 +34,19 @@ export function blank_navi () {
   }
 }
 
-export function apply_navi (from, to, skip_id = false){
-  if(!skip_id) {
-    to.id = from.id
-  }
+export function copy_navi (from, to = null, skip_id = false) {
+  if (!to) to = blank_navi()
 
+  if (!skip_id) to.id = from.id
+
+  to.label = from.label
   to.type = from.type
   to.approach = from.approach
 
   Object.assign(to.required, from.required)
   Object.assign(to.dest, from.dest)
+
+  return to
 }
 
 export const navi = reactive(blank_navi())
@@ -50,9 +56,10 @@ export const guidance = reactive({
   is_heading_err: false,
   heading: 0,
   distance: 0,
-  reach_distance: computed(() => guidance.is_head_active
-      ? guidance.distance - navi.dest.min_dist
-      : null,
+  reach_distance: computed(
+      () => guidance.is_head_active
+          ? guidance.distance - navi.dest.min_dist
+          : null,
   ),
   objectives: {
     transport: computed(() => {
@@ -110,6 +117,10 @@ export const guidance = reactive({
   }),
 })
 
+export const signals = {
+  activated: new Signal(),
+  completed: new Signal(),
+}
 
 const upd_planetary_guidance = () => {
   let lat_start,
@@ -161,7 +172,7 @@ const upd_planetary_guidance = () => {
 
 watch([ status, navi ], () => {
   if (
-      !navi.is_set || navi.type !== DEST_TYPE.PLANETARY ||
+      navi.type !== DEST_TYPE.PLANETARY ||
       navi.dest.lon === null || navi.dest.lat === null || status.pos.alt === null
   ) {
     guidance.is_head_active = false
@@ -173,3 +184,10 @@ watch([ status, navi ], () => {
   }
 }, { immediate: true, deep: true })
 
+watch(
+    () => ({ ...guidance }),
+    (curr, prev) => {
+      if (!prev.is_active && curr.is_active) signals.activated.emit()
+      if (!prev.is_complete && curr.is_complete) signals.completed.emit()
+    },
+)

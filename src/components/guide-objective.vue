@@ -4,6 +4,9 @@
     <span class="status">
       {{ guidance.is_complete ? 'obj. complete' : 'active' }}
     </span>
+    <span class="label">
+      {{ navi.label }}
+    </span>
   </div>
   <div class="objectives" :class="{ 'show-all': ui.is_interact }">
     <div class="goal"
@@ -71,13 +74,22 @@ export default {
   @include typo-caps(300);
   font-weight: bold;
   color: var(--pal-orange);
+  display: flex;
 
   .status {
     color: var(--pal-red);
+    padding-left: 0.5em;
   }
 
   &.complete .status {
     color: var(--pal-blue);
+  }
+
+  .label {
+    @include ellipsis();
+
+    max-width: 60%;
+    margin-left: auto;
   }
 }
 

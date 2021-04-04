@@ -13,7 +13,7 @@
 
     <div class="value">
       <div class="col-title">
-        <p>destination criterias: {{ editing.id ? editing.id : '' }}</p>
+        <p>destination criterias:</p>
         <button @click="pick_from_position()">right here</button>
         <button @click="pick_from_navi()" v-if="guidance">from destination</button>
       </div>
@@ -62,7 +62,13 @@
             <input v-model="editing.dest.min_dist" type="number" />
           </label>
         </template>
+
+        <label class="field"> label
+          <input v-model="editing.label" type="text" />
+        </label>
       </div>
+
+      {{ editing.id ? `edit point: ${ editing.id }` : 'new point' }}
     </div>
 
     <div class="btns">
@@ -77,14 +83,14 @@
 <script>
 import { computed, ref } from 'vue'
 
-import { apply_navi, blank_navi, DEST_TYPE, guidance, navi } from '@/state/navi'
-import { status, TRANSPORT_TYPE }                            from '@/state/status'
-import { extract }                                           from '@/helpers/journal_api'
-import { minmax }                                            from '@/helpers/formaters'
+import { blank_navi, copy_navi, DEST_TYPE, guidance, navi } from '@/state/navi'
+import { status, TRANSPORT_TYPE }                           from '@/state/status'
+import { extract }                                          from '@/helpers/journal_api'
+import { minmax }                                           from '@/helpers/formaters'
 
 export default {
   name: 'navi-editor',
-  emits: [ 'apply', 'canel', 'clear' ],
+  emits: [ 'apply', 'cancel', 'clear' ],
   props: { editing: { type: Object, required: true } },
   setup ({ editing }) {
 
@@ -129,6 +135,7 @@ export default {
     apply () {
       const to_event = blank_navi()
 
+      to_event.label = this.editing.label.toLowerCase()
       to_event.id = this.editing.id
       to_event.type = this.editing.type
 
@@ -186,7 +193,7 @@ export default {
     },
 
     pick_from_navi () {
-      apply_navi(navi, this.editing, true)
+      copy_navi(navi, this.editing, true)
     },
   },
 }

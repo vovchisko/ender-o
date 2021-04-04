@@ -2,6 +2,8 @@
   <div class="panel pan--left-long" v-if="ui.is_interact">
     <pre>{{ guidance }}</pre>
     <pre>{{ navi }}</pre>
+    <b>RACE</b>
+    <pre>{{ race }}</pre>
   </div>
 
   <div class="panel pan--heading-objectives" v-if="guidance.is_active">
@@ -21,16 +23,46 @@
         @clear="clear_destination"
         :editing="editing"
     />
-    <button v-else @click="start_editing()">edit navigation point</button>
+
+    <div class="point-actions" v-else>
+      <div>
+        <button @click="start_editing()">edit navigation point</button>
+      </div>
+      <div>
+        <p v-if="!guidance.is_active">
+          Set navigation destination.
+        </p>
+
+        <!--<p v-else-if="!guidance.is_complete">
+          To add this point to the race - you need to reach navigation destination.
+        </p>-->
+
+        <button v-else-if="navi.id" @click="point_save">save this point</button>
+        <button v-else @click="point_add">+ add this point to race</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="panel pan--right-long">
+    <button @click="save_race()">save changes</button>
+    <button @click="race_clear()">clear race</button>
+
+    <h3>points</h3>
+    <div v-for="(p, i) in race.points">
+      <p>{{ i }} / {{ p.id }} / {{ p.type }}</p>
+      <button @click="start_editing(p)">edit</button>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-
+import { ref }                                               from 'vue'
+import uuid                                                  from 'uuid'
 import { status }                                            from '@/state/status'
-import { apply_navi, blank_navi, DEST_TYPE, guidance, navi } from '@/state/navi'
+import { blank_navi, copy_navi, DEST_TYPE, guidance, navi }  from '@/state/navi'
 import { ui, UI_PANELS }                                     from '@/state/ui'
+import { blank_race, copy_race, load_race, race, save_race } from '@/state/racing'
 
 import NaviEditor     from '@/components/navi-editor'
 import GuideHeading   from '@/components/guide-heading'
@@ -41,12 +73,13 @@ export default {
   components: { GuideObjective, GuideHeading, NaviEditor },
 
   setup () {
-    const is_edit = ref(false)
+    load_race()
 
+    const is_edit = ref(false)
     const editing = ref(blank_navi())
 
     return {
-      is_edit, editing,
+      is_edit, editing, race, save_race,
       status, guidance, navi, ui,
       UI_PANELS, DEST_TYPE,
     }
@@ -54,20 +87,43 @@ export default {
 
   methods: {
     apply_destination (new_editing) {
-      navi.is_set = true
-      apply_navi(new_editing, navi)
+      copy_navi(new_editing, navi)
       this.is_edit = false
+      if (navi.id) this.point_save()
     },
+
     start_editing (point = null) {
-      apply_navi(point || navi, this.editing)
+      copy_navi(point || navi, this.editing)
       this.is_edit = true
     },
+
     clear_destination () {
       this.apply_destination(blank_navi())
+    },
+
+    point_add () {
+      navi.id = uuid()
+      race.points.push(copy_navi(navi))
+      this.clear_destination()
+    },
+
+    point_save () {
+      const i = race.points.findIndex(p => p.id === navi.id)
+      if (i > -1) race.points[i] = copy_navi(navi)
+      this.clear_destination()
+    },
+
+    race_clear () {
+      copy_race(blank_race(), race)
     },
   },
 }
 </script>
-<style lang="scss" scoped="true">
-
+<style lang="scss" scoped>
+.point-actions {
+  display: flex;
+  div {
+    flex: 1;
+  }
+}
 </style>
