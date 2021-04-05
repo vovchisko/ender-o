@@ -52,8 +52,8 @@ import GuideHeading   from '@/components/guide-heading'
 import GuideObjective from '@/components/guide-objective'
 
 // just to make id still id but easy to read/remember
+const format_id = (id) => Number(id).toString(16).padStart(3, '0')
 const point_id = ({ points }) => {
-  const format_id = (id) => Number(id).toString(16).padStart(3, '0')
   let id_rc = 1
   const ids = points.map(p => p.id)
   while (ids.includes(format_id(id_rc))) id_rc++
@@ -105,8 +105,13 @@ export default {
     },
 
     point_delete (point) {
+      this.navi_clear()
+      this.edit_cancel()
       const i = race.points.findIndex(p => p.id === point.id)
       if (i >= 0) race.points.splice(i, 1)
+
+      let id_rc = 1
+      race.points.forEach(p => p.id = format_id(id_rc++))
     },
 
     point_edit (point = null) {
