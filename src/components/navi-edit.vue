@@ -72,10 +72,10 @@
     </div>
 
     <div class="btns">
-      <button @click="apply">set destination</button>
-      <button @click="cancel">cancel</button>
-      <br>
-      <button @click="clear">clear navi</button>
+      <button @click="apply()">
+        {{ editing.id ? 'save' : 'new' }} destination
+      </button>
+      <button @click="cancel()">cancel</button>
     </div>
   </div>
 </template>
@@ -89,7 +89,7 @@ import { extract }                                          from '@/helpers/jour
 import { minmax }                                           from '@/helpers/formaters'
 
 export default {
-  name: 'navi-editor',
+  name: 'navi-edit',
   emits: [ 'apply', 'cancel', 'clear' ],
   props: { editing: { type: Object, required: true } },
   setup ({ editing }) {
@@ -196,13 +196,17 @@ export default {
       copy_navi(navi, this.editing, true)
     },
   },
+  created () {
+    console.log(this)
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .navi-edit {
-  display: flex;
+  display: grid;
   align-content: flex-start;
+  grid-template-columns: 1.25fr 4fr 1.25fr;
 
   .col-title {
     @include typo-caps();
@@ -222,13 +226,11 @@ export default {
   }
 
   .tabs {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-
     & button {
       display: block;
       border: 0 none;
       text-align: right;
-      width: 10rem;
+      width: 100%;
     }
 
     & button:after {
@@ -252,7 +254,6 @@ export default {
     border-right: 1px solid var(--pal-orange);
     border-left: 1px solid var(--pal-orange);
     margin: 0 1rem 0 0;
-    flex: 1;
 
     .fields {
       .field {
@@ -293,7 +294,6 @@ export default {
     flex-direction: column;
 
     & button {
-      width: 10rem;
       margin-bottom: 1rem;
     }
   }

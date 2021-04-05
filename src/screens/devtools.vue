@@ -36,13 +36,13 @@ import { J }             from '@/modules/journal'
 import { status }        from '@/state/status'
 import { ui }            from '@/state/ui'
 import { rec_dt, rec_t } from '@/helpers/formaters'
-import NaviEditor        from '@/components/navi-editor'
+import NaviEdit        from '@/components/navi-edit'
 import GuidanceBar       from '@/components/guide-heading'
 import Racing            from '@/screens/racing'
 
 export default {
   name: 'development',
-  components: { Racing, GuidanceBar, NaviEditor },
+  components: { Racing, GuidanceBar, NaviEdit },
   setup () {
     let counter = 0
     const records = reactive([])
