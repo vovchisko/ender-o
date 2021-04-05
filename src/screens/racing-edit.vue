@@ -1,7 +1,6 @@
 <template>
   <div class="panel pan--left-long" v-if="ui.is_interact">
     <pre>{{ guidance }}</pre>
-    <pre>{{ navi }}</pre>
     <b>RACE</b>
     <pre>{{ race }}</pre>
   </div>
@@ -21,13 +20,11 @@
                @cancel="edit_cancel"
                :editing="editing"
     />
-
     <div class="point-actions" v-else>
-      <button @click="point_edit()">edit navigation point</button>
+      <button @click="point_edit()">add navigation point</button>
       <button @click="navi_clear()" v-if="guidance.is_head_active">clear guidance</button>
     </div>
   </div>
-
 
   <div class="panel pan--right-long">
     <button @click="race_save()">save changes</button>
@@ -45,7 +42,6 @@
 
 <script>
 import { ref }                                               from 'vue'
-import uuid                                                  from 'uuid'
 import { status }                                            from '@/state/status'
 import { blank_navi, copy_navi, DEST_TYPE, guidance, navi }  from '@/state/navi'
 import { ui, UI_PANELS }                                     from '@/state/ui'
@@ -54,6 +50,16 @@ import { blank_race, copy_race, load_race, race, save_race } from '@/state/racin
 import NaviEdit       from '@/components/navi-edit'
 import GuideHeading   from '@/components/guide-heading'
 import GuideObjective from '@/components/guide-objective'
+
+// just to make id still id but easy to read/remember
+const point_id = ({ points }) => {
+  const format_id = (id) => Number(id).toString(16).padStart(3, '0')
+  let id_rc = 1
+  const ids = points.map(p => p.id)
+  while (ids.includes(format_id(id_rc))) id_rc++
+  return format_id(id_rc)
+}
+
 
 export default {
   name: 'racing-edit',
@@ -80,13 +86,17 @@ export default {
         const i = race.points.findIndex(p => p.id === new_editing.id)
         if (i >= 0) race.points[i] = copy_navi(new_editing)
       } else {
-        new_editing.id = uuid()
+        new_editing.id = point_id(race)
         race.points.push(copy_navi(new_editing))
       }
     },
 
     point_test (point) {
-      copy_navi(point, navi)
+      if (point.id === navi.id) {
+        this.navi_clear()
+      } else {
+        copy_navi(point, navi)
+      }
     },
 
     edit_cancel () {
@@ -120,9 +130,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 .point-actions {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-gap: 1rem;
+  display: flex;
+  justify-content: center;
 
+  button {
+    margin: 0 1rem;
+  }
 }
 </style>

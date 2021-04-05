@@ -1,4 +1,5 @@
 <template>
+  <p class="title">{{ editing.id ? `edit point: ${ editing.type }` : 'new point' }}</p>
   <div class="navi-edit">
     <div class="tabs">
       <div class="col-title">
@@ -67,13 +68,11 @@
           <input v-model="editing.label" type="text" />
         </label>
       </div>
-
-      {{ editing.id ? `edit point: ${ editing.id }` : 'new point' }}
     </div>
 
     <div class="btns">
       <button @click="apply()">
-        {{ editing.id ? 'save' : 'new' }} destination
+        {{ editing.id ? 'save' : 'create' }} point
       </button>
       <button @click="cancel()">cancel</button>
     </div>
@@ -196,13 +195,17 @@ export default {
       copy_navi(navi, this.editing, true)
     },
   },
-  created () {
-    console.log(this)
-  },
 }
 </script>
 
 <style lang="scss" scoped>
+.title {
+  @include typo-caps(300);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 128, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
 .navi-edit {
   display: grid;
   align-content: flex-start;
