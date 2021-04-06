@@ -2,7 +2,7 @@
   <div class="panel pan--left-long">
     <pre>{{ guidance }}</pre>
     <b>RACE</b>
-    <pre>{{ round }}</pre>
+    <pre>{{ { ...round, track: { ...round.track, points: round.track.points.length } } }}</pre>
   </div>
 
   <div class="panel pan--heading-objectives" v-if="guidance.is_active">
@@ -30,7 +30,8 @@
   <div class="panel pan--right-long">
     <button @click="track_save()">save changes</button>
     <button @click="track_clear()">clear track</button>
-    <button v-if="!round.state">test track</button>
+    <button v-if="!round.state" @click="test_track_start(track)">test track</button>
+    <button v-if="round.state" @click="test_track_stop()">test stop</button>
 
     <h3>points</h3>
     <div v-for="(p, i) in track.points">
@@ -49,6 +50,7 @@ import { ui, UI_PANELS }                                    from '@/state/ui'
 import { status }                                           from '@/state/status'
 import { blank_navi, copy_navi, DEST_TYPE, guidance, navi } from '@/state/navi'
 import { blank_track, copy_track, round }                   from '@/state/racing'
+import { test_track_start, test_track_stop }                from '@/state/track-test'
 
 import NaviEdit       from '@/components/navi-edit'
 import GuideHeading   from '@/components/guide-heading'
@@ -80,6 +82,7 @@ export default {
       round,
       status, guidance, navi, ui,
       UI_PANELS, DEST_TYPE,
+      test_track_start, test_track_stop,
     }
   },
   mounted () {
