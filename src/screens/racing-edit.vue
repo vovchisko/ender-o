@@ -1,8 +1,8 @@
 <template>
-  <div class="panel pan--left-long" v-if="ui.is_interact">
+  <div class="panel pan--left-long" >
     <pre>{{ guidance }}</pre>
     <b>RACE</b>
-    <pre>{{ race }}</pre>
+    <pre>{{ round }}</pre>
   </div>
 
   <div class="panel pan--heading-objectives" v-if="guidance.is_active">
@@ -29,6 +29,7 @@
   <div class="panel pan--right-long">
     <button @click="race_save()">save changes</button>
     <button @click="race_clear()">clear race</button>
+    <button @click="round_start(race)" v-if="!round.state">test race</button>
 
     <h3>points</h3>
     <div v-for="(p, i) in race.points">
@@ -50,6 +51,7 @@ import { blank_race, copy_race, load_race, race, save_race } from '@/state/racin
 import NaviEdit       from '@/components/navi-edit'
 import GuideHeading   from '@/components/guide-heading'
 import GuideObjective from '@/components/guide-objective'
+import { round , round_start} from '@/state/racing'
 
 // just to make id still id but easy to read/remember
 const format_id = (id) => Number(id).toString(16).padStart(3, '0')
@@ -72,6 +74,7 @@ export default {
     const editing = ref(blank_navi())
 
     return {
+      round , round_start,
       is_edit, editing, race, save_race,
       status, guidance, navi, ui,
       UI_PANELS, DEST_TYPE,

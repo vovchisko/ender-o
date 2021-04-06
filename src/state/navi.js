@@ -117,7 +117,7 @@ export const guidance = reactive({
   }),
 })
 
-export const signals = {
+export const guidance_signals = {
   activated: new Signal(),
   completed: new Signal(),
 }
@@ -187,7 +187,7 @@ watch([ status, navi ], () => {
 watch(
     () => ({ ...guidance }),
     (curr, prev) => {
-      if (!prev.is_active && curr.is_active) signals.activated.emit()
-      if (!prev.is_complete && curr.is_complete) signals.completed.emit()
+      if (!prev.is_active && curr.is_active) guidance_signals.activated.emit()
+      if (!prev.is_complete && curr.is_complete) guidance_signals.completed.emit()
     },
 )

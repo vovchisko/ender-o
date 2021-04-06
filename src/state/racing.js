@@ -1,7 +1,9 @@
-import { reactive } from 'vue'
-import uuid         from 'uuid'
+import { computed, reactive }                          from 'vue'
+import uuid                                            from 'uuid'
+import { copy_navi, guidance, guidance_signals, navi } from '@/state/navi'
 
 const LOCAL_RACE_KEY = 'LOCAL_RACE'
+const ROUND_COUNTDOWN = 5
 
 export function blank_race () {
   return {
@@ -44,21 +46,81 @@ export function load_race () {
   }
 }
 
-export function start_race () {
 
-  /*
+// todo: this is mess. need to organize it nicely
 
-   1 - subscribe on guidance signals
-   2 - put race into active copy
-   3 - set 1st point as destination.
-   4 - start countdown.
-   4.1 - reset countdown if leave checkpoint
-   5 - take next nav point when countdown ends (start race)
-   6 - each time when fires `complete` - move to next point.
-   7 - on last one - show ending screen, unsibscribe
 
-   */
+const ROUND_STATES = Object.freeze({
+  NONE: '',
+  PREPARATION: 'PREPARATION',
+  IN_PROGRESS: 'IN_PROGRESS',
+  FINISH: 'FINISH',
+})
 
+export const round = reactive({
+  state: ROUND_STATES.NONE,
+  countdown: ROUND_COUNTDOWN,
+  point_id: computed(() => guidance.is_active && navi.id ? navi.id : null),
+  point_index: computed(() => c_race.points.findIndex(p => p.id === navi.id)),
+  next_index: computed(() => {
+    return c_race.points[round.point_index + 1] ? round.point_index + 1 : -1
+  }),
+})
+
+// why it's outside the race?
+const c_race = reactive(blank_race())
+
+// why it so separated?
+export function round_start (race) {
+  round.state = ROUND_STATES.PREPARATION
+  round.countdown = ROUND_COUNTDOWN
+  copy_race(race, c_race)
+  copy_navi(c_race.points[0], navi)
 }
 
+function round_check_point () {
+  // todo: check point for back
+  if (round.next_index >= 0 && c_race.points[round.next_index]) {
+    // score progress measures as float value
+    // int part: point index
+    // floa part: amount of "true" avalues in guidance objectives
+    return copy_navi(c_race.points[round.next_index], navi)
+  }
+}
 
+function round_tick () {
+  if (round.state === ROUND_STATES.PREPARATION) {
+
+    if (guidance.is_complete) {
+      round.countdown--
+    } else {
+      round.countdown = ROUND_COUNTDOWN
+    }
+
+    if (round.countdown < 0) {
+      round.state = ROUND_STATES.IN_PROGRESS
+      return round_check_point()
+    }
+  }
+
+  if (round.state === ROUND_STATES.IN_PROGRESS) {
+    if (guidance.is_complete) {
+      if (round.next_index >= 0) {
+        round_check_point()
+      } else {
+        round.state = ROUND_STATES.FINISH
+      }
+    }
+  }
+}
+
+// cmon, we need it only for countdown. let's separate countdown instead
+setInterval(round_tick, 1000)
+
+guidance_signals.activated.on(() => {
+  if (round.state) round_tick()
+})
+
+guidance_signals.completed.on(() => {
+  if (round.state) round_tick()
+})
