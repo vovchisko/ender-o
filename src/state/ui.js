@@ -6,8 +6,8 @@ import { J_GUI_FOCUS } from '@/helpers/journal_api'
 const SCREENS = Object.freeze({
   DEVTOOLS: 'DEVTOOLS',
   // EXPLORATION: 'EXPLORATION',
-  // RACING: 'RACING',
-  RACING_EDIT: 'RACING_EDIT',
+  RACING: 'RACING',
+  TRACK_EDITOR: 'TRACK_EDITOR',
 })
 
 export const UI_PANELS = {
@@ -18,7 +18,7 @@ export const UI_PANELS = {
 }
 
 const ui = reactive({
-  screen: SCREENS.RACING_EDIT,
+  screen: SCREENS.TRACK_EDITOR,
   is_interact: false,
   is_overlay: false,
   blur_screen: computed(() => {

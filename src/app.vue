@@ -9,7 +9,7 @@
       <devtools v-if="ui.screen === SCREENS.DEVTOOLS" />
       <exploration v-if="ui.screen === SCREENS.EXPLORATION" />
       <racing v-if="ui.screen === SCREENS.RACING" />
-      <racing-edit v-if="ui.screen === SCREENS.RACING_EDIT" />
+      <track-editor v-if="ui.screen === SCREENS.TRACK_EDITOR" />
     </main>
 
     <app-footer class="footer" />
@@ -24,11 +24,11 @@ import Exploration from '@/screens/exploration'
 import Racing      from '@/screens/racing'
 import AppHeader   from '@/components/app-header'
 import AppFooter   from '@/components/app-footer'
-import RacingEdit  from '@/screens/racing-edit'
+import TrackEditor  from '@/screens/track-editor'
 
 export default {
   components: {
-    RacingEdit,
+    TrackEditor,
     AppHeader,
     AppFooter,
     Devtools,

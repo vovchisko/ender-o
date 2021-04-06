@@ -56,7 +56,7 @@
                    max="90"
                    step="any" />
           </label>
-          <label class="field" v-if="can_select.altitude"> min altitude (meters)
+          <label class="field" v-if="can_select.altitude"> max altitude (meters)
             <input v-model="editing.dest.alt" type="number" />
           </label>
           <label class="field"> point radius (meters)
