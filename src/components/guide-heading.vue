@@ -1,17 +1,18 @@
 <template>
-  <div ref="elm" class="guide-heading">
-    <div :style="ruler.style_ruler" class="current">
-      <b class="head"></b>
-    </div>
-    <div v-if="guidance.is_head_active" :style="ruler.style_dest" class="dest">
-      <div :class="ruler.deviation_stat" class="head">{{ guidance.heading }}</div>
+  <div class="panel pan--heading">
+    <div ref="elm" class="guide-heading">
+      <div :style="ruler.style_ruler" class="current">
+        <b class="head"></b>
+      </div>
+      <div v-if="guidance.is_head_active" :style="ruler.style_dest" class="dest">
+        <div :class="ruler.deviation_stat" class="head">{{ guidance.heading }}</div>
 
-      <div class="telemetry">
-        <div class="distance"
-             :class="guidance.reach_distance <= 0 ? 'on-position' : ''"
-        >
-          <small class="lbl">DISTANCE:</small>
-          <span class="val">
+        <div class="telemetry">
+          <div class="distance"
+               :class="guidance.reach_distance <= 0 ? 'on-position' : ''"
+          >
+            <small class="lbl">DISTANCE:</small>
+            <span class="val">
               <template v-if="guidance.reach_distance <= 0">
                 ON POSITION
               </template>
@@ -19,13 +20,14 @@
                 {{ ruler.distance.toLocaleString() }} KM
               </template>
             </span>
-          <b class="sig" />
-        </div>
+            <b class="sig" />
+          </div>
 
-        <div v-if="ruler.altitude_stat" class="altitude" :class="ruler.altitude_stat">
-          <small class="lbl">MIN. ALT:</small>
-          <b class="sig" />
-          <span class="val">{{ navi.dest.alt.toLocaleString() }} M</span>
+          <div v-if="ruler.altitude_stat" class="altitude" :class="ruler.altitude_stat">
+            <small class="lbl">MIN. ALT:</small>
+            <b class="sig" />
+            <span class="val">{{ navi.dest.alt.toLocaleString() }} M</span>
+          </div>
         </div>
       </div>
     </div>
@@ -212,7 +214,6 @@ export default {
         }
       }
 
-
       &.err {
         color: red;
         &:before {
@@ -282,7 +283,6 @@ export default {
     }
   }
 }
-
 
 @keyframes blinker {
   0% {

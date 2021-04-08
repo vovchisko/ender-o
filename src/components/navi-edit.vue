@@ -1,4 +1,6 @@
 <template>
+  <!-- todo: track save status and block buttons user can't click -->
+
   <p class="title">{{ editing.id ? `edit point: ${ editing.type }` : 'new point' }}</p>
   <div class="navi-edit">
     <div class="tabs">
@@ -187,8 +189,17 @@ export default {
       this.editing.dest.docked = status.docked.name
       this.editing.dest.lat = status.pos.lat
       this.editing.dest.lon = status.pos.lon
-      this.editing.dest.alt = status.pos.alt
-      this.editing.dest.min_dist = 500
+
+      if (this.editing.required.transport === TRANSPORT_TYPE.FIGHTER) {
+        this.editing.dest.min_dist = 1000
+        this.editing.dest.alt = status.pos.alt + 100
+      } else if (this.editing.required.transport === TRANSPORT_TYPE.SRV) {
+        this.editing.dest.min_dist = 50
+        this.editing.dest.alt = 0
+      } else {
+        this.editing.dest.min_dist = 1500
+        this.editing.dest.alt = status.pos.alt + 100
+      }
     },
 
     pick_from_navi () {

@@ -5,12 +5,18 @@
   position: absolute;
   // box-shadow: 0 0 0 1px #d900d955 inset;
   overflow: auto;
+  // perspective: 403px;
 
   &.pan--heading {
     top: 16%;
     left: 35%;
     right: 35%;
-    perspective: 403px;
+  }
+
+  &.pan--heading-message {
+    top: 8%;
+    left: 30%;
+    right: 30%;
   }
 
   &.pan--heading-objectives {

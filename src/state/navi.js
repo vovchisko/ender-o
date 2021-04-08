@@ -115,6 +115,8 @@ export const guidance = reactive({
         guidance.objectives.position !== false
     )
   }),
+  upd_delta: 0,
+  upd_last_check: Date.now(),
 })
 
 export const guidance_signals = {
@@ -169,8 +171,7 @@ const upd_planetary_guidance = () => {
   }
 }
 
-
-watch([ status, navi ], () => {
+const guidance_check = () => {
   if (
       navi.type !== DEST_TYPE.PLANETARY ||
       navi.dest.lon === null || navi.dest.lat === null || status.pos.alt === null
@@ -182,6 +183,17 @@ watch([ status, navi ], () => {
     guidance.is_head_active = true
     upd_planetary_guidance()
   }
+}
+
+
+watch(status, () => {
+  guidance_check()
+  guidance.upd_delta = Date.now() - guidance.upd_last_check
+  guidance.upd_last_check += guidance.upd_delta
+})
+
+watch(navi, () => {
+  guidance_check()
 }, { immediate: true, deep: true })
 
 watch(

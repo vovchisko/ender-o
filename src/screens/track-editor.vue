@@ -1,18 +1,17 @@
 <template>
-  <div class="panel pan--left-long">
+  <div class="panel pan--right-long" v-if="ui.is_interact">
     <pre>{{ guidance }}</pre>
     <b>RACE</b>
-    <pre>{{ { ...round, track: { ...round.track, points: round.track.points.length } } }}</pre>
+    <pre>{{ {
+      ...round,
+      track: {
+        ...round.track, points: `array(${ round.track.points.length })`,
+      },
+    } }}</pre>
   </div>
 
-  <div class="panel pan--heading-objectives" v-if="guidance.is_active">
-    <guide-objective />
-  </div>
-
-  <div class="panel pan--heading"
-       v-if="guidance.is_active && navi.type === DEST_TYPE.PLANETARY">
-    <guide-heading />
-  </div>
+  <guide-objective v-if="guidance.is_active" />
+  <guide-heading v-if="guidance.is_active && navi.type === DEST_TYPE.PLANETARY" />
 
   <div class="panel pan--central-main" v-if="ui.is_interact">
     <navi-edit v-if="is_edit"
@@ -20,25 +19,36 @@
                @cancel="edit_cancel"
                :editing="editing"
     />
-    <div class="point-actions" v-else>
+    <div class="track__curr-point-actions" v-else>
       <button @click="point_add()">add navigation point</button>
       <button @click="point_edit()" v-if="navi.id">edit this point</button>
       <button @click="navi_clear()" v-if="guidance.is_active">clear guidance</button>
     </div>
   </div>
 
-  <div class="panel pan--right-long">
-    <button @click="track_save()">save changes</button>
-    <button @click="track_clear()">clear track</button>
-    <button v-if="!round.state" @click="test_track_start(track)">test track</button>
-    <button v-if="round.state" @click="test_track_stop()">test stop</button>
+  <div class="panel pan--left-long track" v-if="ui.is_interact">
+    <div class="track__actions">
+      <button @click="track_save()">save changes</button>
+      <button @click="track_clear()">clear track</button>
+      <button v-if="!round.state" @click="test_track_start(track)" :disabled="track.points.length < 2">
+        test track
+      </button>
+      <button v-if="round.state" @click="test_track_stop()" class="active">test stop</button>
+    </div>
 
     <h3>points</h3>
-    <div v-for="(p, i) in track.points">
+    <p v-if="!track.points.length">
+      Track has no points.<br>
+      Race should have at least 2 points.<br>
+    </p>
+
+    <div class="track__point" v-for="(p, i) in track.points">
       <p>{{ i }} / {{ p.id }} / {{ p.type }}</p>
-      <button @click="point_edit(p)" :class="{active: editing.id === p.id}">edit</button>
-      <button @click="point_test(p)" :class="{active: navi.id === p.id}">test</button>
-      <button @click="point_delete(p)">delete</button>
+      <div class="track__point-actions">
+        <button @click="point_edit(p)" :class="{active: editing.id === p.id}">edit</button>
+        <button @click="point_test(p)" :class="{active: navi.id === p.id}">test</button>
+        <button @click="point_delete(p)" class="delete">delete</button>
+      </div>
     </div>
   </div>
 </template>
@@ -93,15 +103,18 @@ export default {
   },
   methods: {
     edit_apply (new_editing) {
-      this.is_edit = false
-
       if (new_editing.id) {
         const i = this.track.points.findIndex(p => p.id === new_editing.id)
         if (i >= 0) this.track.points[i] = copy_navi(new_editing)
+        if (navi.id === new_editing.id) {
+          copy_navi(this.track.points[i], navi)
+        }
       } else {
         new_editing.id = point_id(this.track)
         this.track.points.push(copy_navi(new_editing))
       }
+      this.is_edit = false
+      copy_navi(blank_navi(), this.editing)
     },
 
     point_test (point) {
@@ -146,7 +159,6 @@ export default {
 
     navi_clear () {
       copy_navi(blank_navi(), navi)
-      copy_navi(navi, this.editing)
     },
 
     track_save () {
@@ -177,13 +189,49 @@ export default {
   },
 }
 </script>
-<style lang="scss" scoped>
-.point-actions {
-  display: flex;
-  justify-content: center;
 
-  button {
-    margin: 0 1rem;
+<style lang="scss" scoped>
+.track {
+  &__actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-gap: 0.5rem;
+    margin: 2rem 0;
+  }
+  h3 {
+    @include typo-caps(400);
+    margin: 1rem 0;
+  }
+
+  &__curr-point-actions {
+    display: flex;
+    justify-content: center;
+
+    button {
+      margin: 0 0.5rem 0 0;
+    }
+  }
+
+  &__point {
+    margin-bottom: 1rem;
+
+    p {
+      border-top: 1px solid orange;
+    }
+
+    &-actions {
+      display: flex;
+      justify-content: center;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+
+      button {
+        margin: 0 0.5rem 0 0;
+        padding: 0.25rem 1.25rem;
+        &.delete {
+          margin-left: auto;
+        }
+      }
+    }
   }
 }
 </style>
