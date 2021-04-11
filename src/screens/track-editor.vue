@@ -1,5 +1,5 @@
 <template>
-  <div class="panel pan--right-long">
+  <div class="panel pan--right-long" v-if="ui.is_interact">
     <pre>{{ guidance }}</pre>
     <b>ROUND</b>
     <pre>{{ {
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <div class="panel pan--left-long track">
+  <div class="panel pan--left-long track" v-if="ui.is_interact">
     <div class="track__actions">
       <button @click="track_save()">save changes</button>
       <button @click="track_clear()">clear track</button>
@@ -43,7 +43,7 @@
     </p>
 
     <div class="track__point" v-for="(p, i) in track.points">
-      <p>{{ i }} / {{ p.id }} / {{ p.type }}</p>
+      <p>{{ i }} / {{ p.id }} / {{ p.type }} / {{ p.label }}</p>
       <div class="track__point-actions">
         <button @click="point_delete(p)" class="delete">delete</button>
         <button @click="point_edit(p)" :class="{active: editing.id === p.id}">edit</button>
