@@ -20,10 +20,12 @@
     </div>
     <div class="col wide">
       test
+      <button @click="try_send">try_send</button>
+      {{ net_stat }}
     </div>
     <div class="col">
       <div class="block">
-        <b class="caps">COMPUETD STATUS</b>
+        <b class="caps">STATUS</b>
         <pre>{{ status }}</pre>
       </div>
     </div>
@@ -36,9 +38,10 @@ import { J }             from '@/modules/journal'
 import { status }        from '@/state/status'
 import { ui }            from '@/state/ui'
 import { rec_dt, rec_t } from '@/helpers/formaters'
-import NaviEdit        from '@/components/navi-edit'
+import NaviEdit          from '@/components/navi-edit'
 import GuidanceBar       from '@/components/guide-heading'
 import Racing            from '@/screens/racing'
+import { net }           from '@/modules/net'
 
 export default {
   name: 'development',
@@ -61,7 +64,12 @@ export default {
       }
     })
 
-    return { status, records, data, ui, rec_t, rec_dt }
+    return { net_stat: net.status, status, records, data, ui, rec_t, rec_dt }
+  },
+  methods: {
+    try_send () {
+      net.send('test', { some: 'payload' })
+    },
   },
 }
 </script>
@@ -101,7 +109,6 @@ export default {
       b {
         font-size: 1.2rem;
       }
-
 
       .rec:hover {
         color: #ffba52;
