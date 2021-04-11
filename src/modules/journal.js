@@ -9,6 +9,7 @@ import { settings }      from '@/modules/settings'
 
 const logger = create_logger('journal', { bg: 'green', text: 'white' }, true)
 
+const JOURNAL_HEART_RATE = 1000
 const REG_KEY = '{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}'
 const REG_QUERY = `reg query "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders" /v ` + REG_KEY
 const DEFAULT_DIR = path.join(os.homedir(), 'Saved Games\\Frontier Developments\\Elite Dangerous')
@@ -129,7 +130,7 @@ class Journal extends EE3 {
     this.timer = setInterval(() => {
       this.force_important_files()
       this.do_some_work()
-    }, 1000)
+    }, JOURNAL_HEART_RATE)
 
     try {
       this.watcher = fs.watch(settings.state.journal_path, (ev, f) => {

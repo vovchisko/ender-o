@@ -7,7 +7,7 @@ const SCREENS = Object.freeze({
   DEVTOOLS: 'DEVTOOLS',
   // EXPLORATION: 'EXPLORATION',
   // RACING: 'RACING',
-  RACING_EDIT: 'RACING_EDIT',
+  TRACK_EDITOR: 'TRACK_EDITOR',
 })
 
 export const UI_PANELS = {
@@ -18,7 +18,7 @@ export const UI_PANELS = {
 }
 
 const ui = reactive({
-  screen: SCREENS.RACING_EDIT,
+  screen: SCREENS.TRACK_EDITOR,
   is_interact: false,
   is_overlay: false,
   blur_screen: computed(() => {
@@ -29,7 +29,11 @@ const ui = reactive({
         status.gui_focus === J_GUI_FOCUS.INT_RIGHT
     )
   }),
-  hide_screen: computed(() => status.gui_focus > 0 && !ui.blur_screen && !ui.is_interact),
+  hide_screen: computed(() => (
+      status.gui_focus > 0 &&
+      !ui.blur_screen &&
+      !ui.is_interact
+  )),
 })
 
 let last_ui_blur_screen = null

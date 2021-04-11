@@ -73,7 +73,14 @@
   }
   font-family: var(--typo-font-caps);
   text-transform: lowercase;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+}
+
+@mixin typo-mono($h:false) {
+  @if ($h) {
+    font-size: var(--typo-h#{$h});
+  }
+  font-family: Consolas, monospace, Monospaced;
 }
 
 @mixin ellipsis() {

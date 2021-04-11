@@ -22,7 +22,6 @@ export function cmdr_init () {
 
   J.on('SquadronStartup', (raw) => {
     cmdr.squadron = raw.SquadronName || ''
-
-    logger.log('load game:', [ cmdr.fid, 'CMDR', cmdr.name, cmdr.mode ].join(' / '))
+    logger.log('squadron:', cmdr.squadron || 'none')
   })
 }

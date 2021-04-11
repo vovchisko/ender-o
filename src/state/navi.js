@@ -1,3 +1,5 @@
+import Signal from 'a-signal'
+
 import { computed, reactive, watch } from 'vue'
 import { status }                    from '@/state/status'
 
@@ -10,65 +12,55 @@ export const DEST_TYPE = Object.freeze({
   DOCK: 'DOCK', // dock on the station
 })
 
-export const navi = reactive({
-  id: '',
-  is_set: false,
-  type: DEST_TYPE.SYSTEM,
-  approach: '',
-
-  required: {
-    ship_model: '',
-    transport: '',
-  },
-
-  dest: {
-    system: '',
-    planet: '',
-    docked: '',
-    lon: null,
-    lat: null,
-    alt: null,
-    min_dist: 0,
-  },
-})
-
-export const navi_reset = () => {
-  navi.id = ''
-  navi.is_set = false
-  navi.type = DEST_TYPE.SYSTEM
-  navi.approach = ''
-  navi.required.ship_model = ''
-  navi.required.transport = ''
-  navi.dest.system = ''
-  navi.dest.planet = ''
-  navi.dest.docked = ''
-  navi.dest.lon = null
-  navi.dest.lat = null
-  navi.dest.alt = null
-  navi.dest.min_dist = 0
+export function blank_navi () {
+  return {
+    id: '',
+    label: '',
+    type: DEST_TYPE.SYSTEM,
+    approach: '',
+    required: {
+      ship_model: '',
+      transport: '',
+    },
+    dest: {
+      system: '',
+      planet: '',
+      docked: '',
+      lon: null,
+      lat: null,
+      alt: null,
+      min_dist: 0,
+    },
+  }
 }
 
-// outter buffer vars
+export function copy_navi (from, to = null, skip_id = false) {
+  if (!to) to = blank_navi()
+
+  if (!skip_id) to.id = from.id
+
+  to.label = from.label
+  to.type = from.type
+  to.approach = from.approach
+
+  Object.assign(to.required, from.required)
+  Object.assign(to.dest, from.dest)
+
+  return to
+}
+
+export const navi = reactive(blank_navi())
 
 export const guidance = reactive({
   is_head_active: false,
   is_heading_err: false,
   heading: 0,
   distance: 0,
-  reach_distance: computed(() => guidance.is_head_active
-      ? guidance.distance - navi.dest.min_dist
-      : null,
+  reach_distance: computed(
+      () => guidance.is_head_active
+          ? guidance.distance - navi.dest.min_dist
+          : null,
   ),
-  is_complete: computed(() => {
-    return (
-        guidance.objectives.transport !== false &&
-        guidance.objectives.system !== false &&
-        guidance.objectives.approach !== false &&
-        guidance.objectives.planet !== false &&
-        guidance.objectives.docked !== false &&
-        guidance.objectives.position !== false
-    )
-  }),
   objectives: {
     transport: computed(() => {
       return navi.required.transport
@@ -103,8 +95,59 @@ export const guidance = reactive({
       )
     }),
   },
+  is_active: computed(() => {
+    return (
+        guidance.objectives.transport !== null ||
+        guidance.objectives.system !== null ||
+        guidance.objectives.approach !== null ||
+        guidance.objectives.planet !== null ||
+        guidance.objectives.docked !== null ||
+        guidance.objectives.position !== null
+    )
+  }),
+  is_complete: computed(() => {
+    return (
+        guidance.objectives.transport !== false &&
+        guidance.objectives.system !== false &&
+        guidance.objectives.approach !== false &&
+        guidance.objectives.planet !== false &&
+        guidance.objectives.docked !== false &&
+        guidance.objectives.position !== false
+    )
+  }),
+  upd_delta: 0,
+  upd_last_check: Date.now(),
 })
 
+export const guidance_signals = {
+  activated: new Signal(),
+  completed: new Signal(),
+}
+
+// only calc bearing - specially for racing.
+export function calc_simple_bearing (from = { lon: 0, lat: 0, r: 1 }, to = { lon: 0, lat: 0 }) {
+  let lat_start,
+      lot_start,
+      lat_dest,
+      lon_dest,
+      d_lon,
+      d_lat,
+      init_bear
+
+  lat_start = from.lat * PI / 180
+  lot_start = from.lon * PI / 180
+  lat_dest = to.lat * PI / 180
+  lon_dest = to.lon * PI / 180
+
+  d_lon = lon_dest - lot_start
+  d_lat = Math.log(Math.tan(PI / 4 + lat_dest / 2) / Math.tan(PI / 4 + lat_start / 2))
+
+  init_bear = (Math.atan2(d_lon, d_lat)) * (180 / PI)
+
+  if (init_bear < 0) init_bear = 360 + init_bear
+
+  return Math.floor(init_bear)
+}
 
 const upd_planetary_guidance = () => {
   let lat_start,
@@ -149,14 +192,13 @@ const upd_planetary_guidance = () => {
     guidance.is_heading_err = false
     guidance.heading = heading
     guidance.distance = dist
-    guidance.deviation = Math.abs(guidance.heading - status.pos.heading)
+    guidance.deviation = (guidance.heading - status.pos.heading + 180) % 360 - 180
   }
 }
 
-
-watch([ status, navi ], () => {
+const guidance_check = () => {
   if (
-      !navi.is_set || navi.type !== DEST_TYPE.PLANETARY ||
+      navi.type !== DEST_TYPE.PLANETARY ||
       navi.dest.lon === null || navi.dest.lat === null || status.pos.alt === null
   ) {
     guidance.is_head_active = false
@@ -166,5 +208,23 @@ watch([ status, navi ], () => {
     guidance.is_head_active = true
     upd_planetary_guidance()
   }
+}
+
+
+watch(status, () => {
+  guidance_check()
+  guidance.upd_delta = Date.now() - guidance.upd_last_check
+  guidance.upd_last_check += guidance.upd_delta
+})
+
+watch(navi, () => {
+  guidance_check()
 }, { immediate: true, deep: true })
 
+watch(
+    () => ({ ...guidance }),
+    (curr, prev) => {
+      if (!prev.is_active && curr.is_active) guidance_signals.activated.emit()
+      if (!prev.is_complete && curr.is_complete) guidance_signals.completed.emit()
+    },
+)
