@@ -3,8 +3,6 @@ import { reactive }      from 'vue'
 import { create_logger } from '@/modules/logger'
 import { settings }      from '@/modules/settings'
 
-const client = new WseClient()
-
 const logger_in = create_logger('wse.in', { bg: '#ac00ff', text: 'white' })
 const logger_out = create_logger('wse.out', { bg: '#4a27d7', text: 'white' })
 
@@ -39,7 +37,8 @@ class Net extends WseClient {
       this.state.is_error = true
     })
 
-    this.connect_when_ready()
+    // todo: when?
+    // this.connect_when_ready()
   }
 
   connect_when_ready () {
