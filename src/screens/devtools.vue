@@ -20,7 +20,7 @@
     </div>
     <div class="col wide">
       test
-      <button @click="try_send">try_send</button>
+      <button @click="try_send">try net</button>
       {{ net_stat }}
     </div>
     <div class="col">

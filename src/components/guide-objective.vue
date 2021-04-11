@@ -1,9 +1,18 @@
 <template>
-  <div class="panel pan--heading-message" v-if="label">
+
+  <div class="panel pan--heading-message" v-if="guidance.is_active && label">
     <div class="navi-label">{{ label }}</div>
   </div>
 
-  <!-- todo: watch race status and show countdwn or finish message as well -->
+  <div class="panel pan--central-hero-sub ">
+    <p class="countdown" v-if="round.state === ROUND_STATES.COUNTDOWN">00 : {{ cdowdn.s }} . {{ cdowdn.ms }}</p>
+  </div>
+
+  <transition name="hero-slide">
+    <div class="panel pan--central-hero-message" v-if="hero_label.show">
+      <p class="hero-message">{{ hero_label.text }}</p>
+    </div>
+  </transition>
 
   <div class="panel pan--heading-objectives">
 
@@ -13,7 +22,7 @@
       {{ guidance.is_complete ? 'obj. complete' : 'active' }}
     </span>
       <span class="label">
-      {{ navi.id ? `point #${ navi.id }` : '' }}
+     {{ navi.type }} {{ navi.id ? `point #${ navi.id }` : '' }}
     </span>
     </div>
     <div class="objectives" :class="{ 'show-all': ui.is_interact }">
@@ -66,25 +75,63 @@
 </template>
 
 <script>
-import { nextTick, ref, watch } from 'vue'
-import { ui }                   from '@/state/ui'
-import { guidance, navi }       from '@/state/navi'
+import { nextTick, reactive, ref, watch } from 'vue'
+import { ui }                             from '@/state/ui'
+import { guidance, navi }                 from '@/state/navi'
+import { round, ROUND_STATES }            from '@/state/racing'
 
 export default {
   name: 'guide-objective',
   data () { return { ph: '- not set -' }},
   setup () {
-    const label = ref(navi.label)
-    const label_elm = ref(null)
 
-    const pick_label = () => {
+    // point label
+    const label = ref(navi.label)
+    watch(navi, () => {
       label.value = ''
       nextTick(() => label.value = navi.label)
+    }, { deep: true })
+
+
+
+    // hero message
+    const hero_label = reactive({ show: false, text: '' })
+    let _hero_timeout = 0
+    let _last_round_state = null
+
+    const show_hero_label = (txt, timeout = 3000) => {
+      if (_hero_timeout) clearTimeout(_hero_timeout)
+      hero_label.text = txt
+      hero_label.show = true
+      setTimeout(() => { hero_label.show = false }, timeout)
     }
 
-    watch([ navi ], pick_label, { deep: true })
+    watch(round, () => {
+      if (round.state !== _last_round_state) {
+        if (round.state === ROUND_STATES.PREPARATION) show_hero_label('get on start position', 5000)
+        if (round.state === ROUND_STATES.COUNTDOWN) show_hero_label('get ready!', 3000)
+        if (round.state === ROUND_STATES.IN_PROGRESS) show_hero_label('go!', 3000)
+        if (round.state === ROUND_STATES.FINISH) show_hero_label('finished!', 10000)
+        _last_round_state = round.state
+      }
+    }, { immediate: true })
 
-    return { guidance, navi, ui, label, label_elm }
+    return {
+      label, hero_label,
+      round, guidance, navi, ui,
+      ROUND_STATES,
+    }
+  },
+  computed: {
+    cdowdn () {
+      const raw = Math.max(0, round.countdown) / 1000
+      const s = Math.floor(Math.max(0, round.countdown) / 1000)
+      const ms = raw - s
+      return {
+        s: String(s).padStart(2, '0'),
+        ms: String(Math.floor(ms * 1000)).padStart(3, '0'),
+      }
+    },
   },
 }
 </script>
@@ -197,6 +244,49 @@ export default {
   animation: start-blinker 7500ms forwards;
 }
 
+.hero-message {
+  @include typo-caps(800);
+
+  text-align: center;
+  width: max-content;
+  font-weight: bold;
+  margin: 1em auto;
+  font-style: italic;
+  text-transform: uppercase;
+  text-shadow: 5px 5px 0 black;
+}
+
+.hero-slide-enter-active {
+  transition: all 0.2s ease-in;
+}
+
+.hero-slide-leave-active {
+  transition: all 0.3s ease-in;
+}
+
+.hero-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-5rem);
+}
+
+.hero-slide-leave-to {
+  opacity: 0;
+  transform: translateX(5rem);
+}
+
+.countdown {
+  @include typo-mono(600);
+
+  color: red;
+  letter-spacing: 0.2rem;
+  word-spacing: -0.8rem;
+  margin: 1em auto;
+  padding: 0.5em 5rem;
+  background: #0005;
+  box-shadow: 0 0 10px 5px #0005;
+  width: max-content;
+}
+
 @keyframes start-blinker {
   0% {
     transform: rotateX(0);
@@ -222,8 +312,8 @@ export default {
     opacity: 1;
   }
   7% {
-      opacity: 0;
-    }
+    opacity: 0;
+  }
   8% {
     opacity: 1;
   }

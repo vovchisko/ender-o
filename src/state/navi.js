@@ -124,6 +124,31 @@ export const guidance_signals = {
   completed: new Signal(),
 }
 
+// only calc bearing - specially for racing.
+export function calc_simple_bearing (from = { lon: 0, lat: 0, r: 1 }, to = { lon: 0, lat: 0 }) {
+  let lat_start,
+      lot_start,
+      lat_dest,
+      lon_dest,
+      d_lon,
+      d_lat,
+      init_bear
+
+  lat_start = from.lat * PI / 180
+  lot_start = from.lon * PI / 180
+  lat_dest = to.lat * PI / 180
+  lon_dest = to.lon * PI / 180
+
+  d_lon = lon_dest - lot_start
+  d_lat = Math.log(Math.tan(PI / 4 + lat_dest / 2) / Math.tan(PI / 4 + lat_start / 2))
+
+  init_bear = (Math.atan2(d_lon, d_lat)) * (180 / PI)
+
+  if (init_bear < 0) init_bear = 360 + init_bear
+
+  return Math.floor(init_bear)
+}
+
 const upd_planetary_guidance = () => {
   let lat_start,
       lot_start,
@@ -167,7 +192,7 @@ const upd_planetary_guidance = () => {
     guidance.is_heading_err = false
     guidance.heading = heading
     guidance.distance = dist
-    guidance.deviation = Math.abs(guidance.heading - status.pos.heading)
+    guidance.deviation = (guidance.heading - status.pos.heading + 180) % 360 - 180
   }
 }
 

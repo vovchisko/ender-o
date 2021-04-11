@@ -1,7 +1,7 @@
 <template>
-  <div class="panel pan--right-long" v-if="ui.is_interact">
+  <div class="panel pan--right-long">
     <pre>{{ guidance }}</pre>
-    <b>RACE</b>
+    <b>ROUND</b>
     <pre>{{ {
       ...round,
       track: {
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <div class="panel pan--left-long track" v-if="ui.is_interact">
+  <div class="panel pan--left-long track">
     <div class="track__actions">
       <button @click="track_save()">save changes</button>
       <button @click="track_clear()">clear track</button>
@@ -45,9 +45,9 @@
     <div class="track__point" v-for="(p, i) in track.points">
       <p>{{ i }} / {{ p.id }} / {{ p.type }}</p>
       <div class="track__point-actions">
+        <button @click="point_delete(p)" class="delete">delete</button>
         <button @click="point_edit(p)" :class="{active: editing.id === p.id}">edit</button>
         <button @click="point_test(p)" :class="{active: navi.id === p.id}">test</button>
-        <button @click="point_delete(p)" class="delete">delete</button>
       </div>
     </div>
   </div>
@@ -228,7 +228,7 @@ export default {
         margin: 0 0.5rem 0 0;
         padding: 0.25rem 1.25rem;
         &.delete {
-          margin-left: auto;
+          margin-right: auto;
         }
       }
     }

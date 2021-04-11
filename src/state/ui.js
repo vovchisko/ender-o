@@ -18,7 +18,7 @@ export const UI_PANELS = {
 }
 
 const ui = reactive({
-  screen: SCREENS.DEVTOOLS,
+  screen: SCREENS.TRACK_EDITOR,
   is_interact: false,
   is_overlay: false,
   blur_screen: computed(() => {

@@ -56,11 +56,12 @@ export default {
         if (status.pos.alt < navi.dest.alt / 2) return 'perfect'
         return 'ok'
       }),
+      abs_deviation: computed(()=> Math.abs(guidance.deviation)),
       deviation_stat: computed(() => {
         if (guidance.reach_distance < 0) return 'on-position'
-        if (guidance.deviation > 150) return 'deviation3'
-        if (guidance.deviation > 15) return 'deviation2'
-        if (guidance.deviation > 10) return 'deviation1'
+        if (ruler.abs_deviation > 150) return 'deviation3'
+        if (ruler.abs_deviation > 15) return 'deviation2'
+        if (ruler.abs_deviation > 10) return 'deviation1'
         return 'deviation0'
       }),
       ruler_width: 0,
@@ -98,6 +99,7 @@ export default {
 
 <style lang="scss">
 .guide-heading {
+
   margin: 0 auto;
   padding: 0.5em 0;
   color: #ff8800;

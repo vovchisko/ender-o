@@ -1,10 +1,11 @@
 import { computed, reactive } from 'vue'
 import { guidance, navi }     from '@/state/navi'
 
-export const ROUND_COUNTDOWN = 5
+export const ROUND_COUNTDOWN = 5000
 export const ROUND_STATES = Object.freeze({
   NONE: '',
   PREPARATION: 'PREPARATION',
+  COUNTDOWN: 'COUNTDOWN',
   IN_PROGRESS: 'IN_PROGRESS',
   FINISH: 'FINISH',
 })
@@ -30,6 +31,8 @@ export function copy_track (from, to = null) {
 
 export const round = reactive({
   state: ROUND_STATES.NONE,
+  start_time: 0,
+  finish_time: 0,
   is_test: computed(() => !round.track.is_published),
   countdown: ROUND_COUNTDOWN,
   point_id: computed(() => guidance.is_active && navi.id ? navi.id : null),
