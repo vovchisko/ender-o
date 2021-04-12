@@ -8,7 +8,7 @@ Overlay Application powered by [Ender Developemnt](https://inara.cz/squadron/988
 - Racing editor (singleplayer).
 - Finish your track (singleplayer).
 
-## Roadmap
+## Planned features
 - Publish your track so other CMDRs can try it.
 - Multiplayer racing.
 - Leaderboard and seasons.
