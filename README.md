@@ -1,18 +1,23 @@
-# ender-o
+# ENDER-O
 
-## Project setup
-```
-npm install
-```
+Overlay Application powered by [Ender Developemnt](https://inara.cz/squadron/9888/).
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Features
+- Overlay for borderless mode (press [F3] to focus overlay)
+- Dev panel to inspect journal events.
+- Racing editor (singleplayer).
+- Finish your track (singleplayer).
 
-### Compiles and minifies for production
+## Roadmap
+- Publish your track so other CMDRs can try it.
+- Multiplayer racing.
+- Leaderboard and seasons.
+
+## Setup and Development
 ```
-npm run build
+npm install // Project setup
+npm run serve // Compiles and hot-reloads for development
+npm run build // Compiles and minifies for production
 ```
 
 ### Customize configuration
