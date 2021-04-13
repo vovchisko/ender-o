@@ -70,6 +70,18 @@
         <div class="type"><b /> transport type</div>
         <div class="value">{{ navi.required.transport || ph }}</div>
       </div>
+
+      <div class="goal"
+           :class="{
+            'missing': guidance.objectives.supercruise === false,
+            'check': guidance.objectives.supercruise === true
+          }">
+        <div class="type"><b /> fsd</div>
+        <div class="value">
+          <template v-if="guidance.objectives.supercruise === null">{{ ph }}</template>
+          <template v-else>{{ navi.supercruise ? 'enter' : 'exit' }} supercruise</template>
+        </div>
+      </div>
     </div>
   </div>
 </template>

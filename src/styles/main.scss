@@ -63,6 +63,8 @@ label {
   }
 }
 
+label > button { display: inline; margin-right: 0.5rem; }
+
 pre {
   line-height: 1;
   margin: 0;

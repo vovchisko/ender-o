@@ -8,13 +8,13 @@
         <p>type:</p>
       </div>
       <button v-for="type in DEST_TYPE"
-              :class="{'active': type === editing.type}"
+              :class="{ active: type === editing.type}"
               @click="editing.type=type">
         {{ type }}
       </button>
     </div>
 
-    <div class="value">
+    <div class="form">
       <div class="col-title">
         <p>destination criterias:</p>
         <button @click="pick_from_position()">right here</button>
@@ -25,50 +25,63 @@
           <label>required transport</label>
           <button v-for="type in TRANSPORT_TYPE"
                   :value="type"
+                  :class="{ active: editing.required.transport === type }"
                   @click="editing.required.transport = type"
-                  :class="{'active': editing.required.transport === type }"
           >
             {{ type }}
           </button>
         </div>
-        <label class="field"> target system
-          <input v-model="editing.dest.system" type="text" />
-        </label>
-        <label class="field" v-if="can_select.approach"> approach (body or station)
-          <input v-model="editing.approach" type="text" />
-        </label>
-        <label class="field" v-if="can_select.planet"> landable planet
-          <input v-model="editing.dest.planet" type="text" />
-        </label>
-        <label class="field" v-if="can_select.station"> station to dock
-          <input v-model="editing.dest.docked" type="text" />
-        </label>
-        <template v-if="can_select.coords">
-          <label class="field"> lon
-            <input v-model="editing.dest.lon"
-                   type="number"
-                   min="-180"
-                   max="180"
-                   step="any" />
-          </label>
-          <label class="field"> lat
-            <input v-model="editing.dest.lat"
-                   type="number"
-                   min="-90"
-                   max="90"
-                   step="any" />
-          </label>
-          <label class="field" v-if="can_select.altitude"> max altitude (meters)
-            <input v-model="editing.dest.alt" type="number" />
-          </label>
-          <label class="field"> point radius (meters)
-            <input v-model="editing.dest.min_dist" type="number" />
-          </label>
-        </template>
-
-        <label class="field"> label
-          <input v-model="editing.label" type="text" />
-        </label>
+        <div class="cols">
+          <div class="col">
+            <label class="field"> target system
+              <input v-model="editing.dest.system" type="text" />
+            </label>
+            <label class="field" v-if="can_select.approach"> approach (body or station)
+              <input v-model="editing.approach" type="text" />
+            </label>
+            <label class="field" v-if="can_select.planet"> landable planet
+              <input v-model="editing.dest.planet" type="text" />
+            </label>
+            <label class="field" v-if="can_select.station"> station to dock
+              <input v-model="editing.dest.docked" type="text" />
+            </label>
+            <label class="field"> label
+              <input v-model="editing.label" type="text" />
+            </label>
+          </div>
+          <div class="col">
+            <template v-if="can_select.coords">
+              <label class="field"> lon
+                <input v-model="editing.dest.lon"
+                       type="number"
+                       min="-180"
+                       max="180"
+                       step="any" />
+              </label>
+              <label class="field"> lat
+                <input v-model="editing.dest.lat"
+                       type="number"
+                       min="-90"
+                       max="90"
+                       step="any" />
+              </label>
+              <label class="field" v-if="can_select.altitude"> max altitude (meters)
+                <input v-model="editing.dest.alt" type="number" />
+              </label>
+              <label class="field"> point radius (meters)
+                <input v-model="editing.dest.min_dist" type="number" />
+              </label>
+            </template>
+            <label class="field" v-if="can_select.supercruise"> supercruise<br>
+              <button :class="{active:editing.supercruise === true}" @click="editing.supercruise = true">yes</button>
+              <button :class="{active:editing.supercruise === null}" @click="editing.supercruise = null">ignore</button>
+              <button :class="{active:editing.supercruise === false}" @click="editing.supercruise = false">no</button>
+              <span class="warn" v-if="editing.supercruise !== null && editing.type === DEST_TYPE.PLANETARY">
+                make sure your checkpoint radius is large enough to prevent overshoot.
+              </span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -79,6 +92,7 @@
       <button @click="cancel()">cancel</button>
     </div>
   </div>
+  <pre>{{ can_select }}</pre>
 </template>
 
 <script>
@@ -104,6 +118,10 @@ export default {
       )),
       approach: computed(() => (
           [ DEST_TYPE.APPROACH, DEST_TYPE.DOCK ].includes(editing.type)
+      )),
+      supercruise: computed(() => (
+          (editing.type === DEST_TYPE.PLANETARY && editing.required.transport === TRANSPORT_TYPE.SHIP) ||
+          editing.type === DEST_TYPE.SYSTEM
       )),
       transport: computed(() => (
           editing.type === DEST_TYPE.PLANETARY
@@ -168,6 +186,11 @@ export default {
         }
       }
 
+      if (this.can_select.supercruise) {
+        to_event.supercruise = this.editing.supercruise
+        to_event.dest.min_dist = minmax(this.editing.dest.min_dist, 5000, 800000)
+      }
+
       this.$emit('apply', to_event)
     },
 
@@ -182,6 +205,7 @@ export default {
         this.editing.type = DEST_TYPE.SYSTEM
       }
 
+      this.editing.supercruise = null // don't use it by default, status.flags.Supercruise || null
       this.editing.approach = status.near.body
       this.editing.required.transport = status.transport
       this.editing.dest.system = status.pos.system
@@ -263,13 +287,19 @@ export default {
     }
   }
 
-  .value {
+  .form {
     padding: 0 1rem;
     border-right: 1px solid var(--pal-orange);
     border-left: 1px solid var(--pal-orange);
     margin: 0 1rem 0 0;
 
     .fields {
+      .cols {
+        display: flex;
+        .col {
+          flex: 1;
+        }
+      }
       .field {
         margin-bottom: 1rem;
         display: block;

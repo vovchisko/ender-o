@@ -4,24 +4,20 @@
       <div class="block">
         <b class="caps">DATA</b>
         <div v-for="e in data" :class="e.expanded ? 'expanded':''" class="rec">
-          <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{
-              e.event }}</pre>
+          <pre @click="e.expanded = !e.expanded">{{ rec_dt(e.rec.timestamp) }} :: {{ e.event }}</pre>
           <pre v-if="e.expanded">{{ e.rec }}</pre>
         </div>
       </div>
       <div class="block">
         <b class="caps">JOURNAL</b>
         <div v-for="e in records" class="rec">
-          <pre @click="e.expanded = !e.expanded">{{ rec_t(e.rec.timestamp) }} :: {{
-              e.event }}</pre>
+          <pre @click="e.expanded = !e.expanded">{{ rec_t(e.rec.timestamp) }} :: {{ e.event }}</pre>
           <pre v-if="e.expanded">{{ e.rec }}</pre>
         </div>
       </div>
     </div>
     <div class="col wide">
-      test
-      <button @click="try_send">try net</button>
-      {{ net_stat }}
+
     </div>
     <div class="col">
       <div class="block">
@@ -41,7 +37,6 @@ import { rec_dt, rec_t } from '@/helpers/formaters'
 import NaviEdit          from '@/components/navi-edit'
 import GuidanceBar       from '@/components/guide-heading'
 import Racing            from '@/screens/racing'
-import { net }           from '@/modules/net'
 
 export default {
   name: 'development',
@@ -64,11 +59,10 @@ export default {
       }
     })
 
-    return { net_stat: net.status, status, records, data, ui, rec_t, rec_dt }
+    return { status, records, data, ui, rec_t, rec_dt }
   },
   methods: {
     try_send () {
-      net.send('test', { some: 'payload' })
     },
   },
 }

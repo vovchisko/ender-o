@@ -23,7 +23,6 @@ class Settings {
     this.onerror = new Signal()
 
     this.file = this._get_path()
-
   }
 
   _get_path () {
