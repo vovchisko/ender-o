@@ -2,6 +2,7 @@ import { WseClient }     from 'wse'
 import { reactive }      from 'vue'
 import { create_logger } from '@/modules/logger'
 import { settings }      from '@/modules/settings'
+import { WS_URL }        from '@/constants'
 
 const STAT_TEXT = Object.freeze({
   ONLINE: 'ONLINE',
@@ -71,7 +72,7 @@ class Net extends WseClient {
     })
 
     // todo: when?
-    // this.connect_when_ready()
+    this.connect_when_ready()
   }
 
   connect_when_ready () {
@@ -89,6 +90,8 @@ class Net extends WseClient {
   }
 }
 
-const net = new Net('ws://localhost:4200/ender-ws')
+const net = new Net(WS_URL)
+
+setInterval(() => net.send('ping', Math.random()), 5000)
 
 export { net }

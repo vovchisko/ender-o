@@ -12,7 +12,7 @@ export const ROUND_STATES = Object.freeze({
 
 export function blank_track () {
   return {
-    id: '',
+    uuid: '',
     name: 'New Race',
     is_published: false, // this means you can edit it.
     points: [],

@@ -173,7 +173,7 @@ export default {
     },
 
     save_race () {
-      if (!this.track.id) this.track.id = uuid()
+      if (!this.track.uuid) this.track.uuid = uuid()
       const str = JSON.stringify(this.track)
       localStorage.setItem(LOCAL_RACE_KEY, str)
     },
