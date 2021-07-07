@@ -17,6 +17,7 @@ export function blank_navi () {
     id: '',
     label: '',
     type: DEST_TYPE.SYSTEM,
+    supercruise: null,
     approach: '',
     required: {
       ship_model: '',
@@ -42,6 +43,7 @@ export function copy_navi (from, to = null, skip_id = false) {
   to.label = from.label
   to.type = from.type
   to.approach = from.approach
+  to.supercruise = from.supercruise
 
   Object.assign(to.required, from.required)
   Object.assign(to.dest, from.dest)
@@ -87,6 +89,11 @@ export const guidance = reactive({
           ? navi.dest.docked === status.docked.name
           : null
     }),
+    supercruise: computed(() => {
+      return navi.supercruise !== null
+          ? navi.supercruise === status.flags.Supercruise
+          : null
+    }),
     position: computed(() => {
       if (navi.type !== DEST_TYPE.PLANETARY) return null
       return Boolean(
@@ -102,6 +109,7 @@ export const guidance = reactive({
         guidance.objectives.approach !== null ||
         guidance.objectives.planet !== null ||
         guidance.objectives.docked !== null ||
+        guidance.objectives.supercruise !== null ||
         guidance.objectives.position !== null
     )
   }),
@@ -112,6 +120,7 @@ export const guidance = reactive({
         guidance.objectives.approach !== false &&
         guidance.objectives.planet !== false &&
         guidance.objectives.docked !== false &&
+        guidance.objectives.supercruise !== false &&
         guidance.objectives.position !== false
     )
   }),

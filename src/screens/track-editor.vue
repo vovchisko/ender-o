@@ -1,5 +1,6 @@
 <template>
   <div class="panel pan--right-long" v-if="ui.is_interact">
+    <b>GUIDANCE</b>
     <pre>{{ guidance }}</pre>
     <b>ROUND</b>
     <pre>{{ {
@@ -8,10 +9,12 @@
         ...round.track, points: `array(${ round.track.points.length })`,
       },
     } }}</pre>
+    <b>navi</b>
+    <pre>{{ navi }}</pre>
   </div>
 
   <guide-objective v-if="guidance.is_active" />
-  <guide-heading v-if="guidance.is_active && navi.type === DEST_TYPE.PLANETARY" />
+  <guide-heading v-if="guidance.is_active && guidance.objectives.planet === true" />
 
   <div class="panel pan--central-main" v-if="ui.is_interact">
     <navi-edit v-if="is_edit"
@@ -170,7 +173,7 @@ export default {
     },
 
     save_race () {
-      if (!this.track.id) this.track.id = uuid()
+      if (!this.track.uuid) this.track.uuid = uuid()
       const str = JSON.stringify(this.track)
       localStorage.setItem(LOCAL_RACE_KEY, str)
     },

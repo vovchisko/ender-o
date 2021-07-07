@@ -19,3 +19,7 @@ export const ED_WIN_TITLE = 'Elite - Dangerous (CLIENT)'
 export const URL_ISSUES = 'https://github.com/vovchisko/ender-o/issues'
 export const URL_DISCORD = 'https://discord.gg/8cdbCQQQ'
 export const UPDATE_INTERVAL = 30 * 60 * 1000
+
+export const WS_URL = process.env.NODE_ENV === 'production'
+    ? 'wss://ender.observer/ender-ws'
+    : 'ws://localhost:4200/ender-ws'

@@ -1,4 +1,4 @@
-<template>
+<template v-if="guidance.is_active && navi.type === DEST_TYPE.PLANETARY" >
   <div class="panel pan--heading">
     <div ref="elm" class="guide-heading">
       <div :style="ruler.style_ruler" class="current">
@@ -38,7 +38,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 
 import { round_n }        from '@/helpers/formaters'
-import { guidance, navi } from '@/state/navi'
+import { guidance, navi, DEST_TYPE } from '@/state/navi'
 import { status }         from '@/state/status'
 
 export default {

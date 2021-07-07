@@ -70,7 +70,7 @@ export default {
     overflow: hidden;
 
     &-fx-hide {
-      display: none;
+      visibility: hidden;
     }
   }
 

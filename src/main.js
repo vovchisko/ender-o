@@ -1,13 +1,14 @@
 import { createApp } from 'vue'
 
-import app             from '@/app.vue'
-import { IPC_EVENTS }  from '@/constants'
-import { settings }    from '@/modules/settings'
-import { J }           from '@/modules/journal'
-import { ipcr }        from '@/modules/ipcr'
-import { ui }          from '@/state/ui'
-import { status_init } from '@/state/status'
-import { cmdr_init }   from '@/state/cmdr'
+import app                from '@/app.vue'
+import { IPC_EVENTS }     from '@/constants'
+import { settings }       from '@/modules/settings'
+import { J }              from '@/modules/journal'
+import { ipcr }           from '@/modules/ipcr'
+import { ui }             from '@/state/ui'
+import { status_init }    from '@/state/status'
+import { cmdr_init }      from '@/state/cmdr'
+import { dev_cache_init } from '@/state/dev-cache'
 
 require('@/styles/reset.scss')
 require('@/assets/fonts/eurocaps.css')
@@ -33,6 +34,7 @@ function main () {
     await J.go()
   })
 
+  dev_cache_init()
   cmdr_init()
   status_init()
 
