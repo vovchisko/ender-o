@@ -20,5 +20,9 @@ npm run serve // Compiles and hot-reloads for development
 npm run build // Compiles and minifies for production
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Current State of Developmetn
+As Elite Dangerous Odyssey is slightly broken right now - I'd keep this app as-is and wait for the fixes.
+
+**dɪsˈkleɪmə:**
+
+*Unfortunately, I am not a part of Frontier Developments Plc. I'm using assets from original Elite Dangerous game to make people feel more comfortable playing with ED-VOID tools. All right on Elite Dangerous and assets belongs to Frontier Dev Plc.*
