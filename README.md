@@ -2,6 +2,9 @@
 
 Overlay Application powered by [Ender Developemnt](https://inara.cz/squadron/9888/).
 
+> I'm not activelly working on this project right now. 
+> If you see ED Odyssey getting better and want to see this tool done - poke me on twitter @vovchisko
+
 ## Features
 - Overlay for borderless mode (press [F3] to focus overlay)
 - Dev panel to inspect journal events.
@@ -25,4 +28,4 @@ As Elite Dangerous Odyssey is slightly broken right now - I'd keep this app as-i
 
 **dɪsˈkleɪmə:**
 
-*Unfortunately, I am not a part of Frontier Developments Plc. I'm using assets from original Elite Dangerous game to make people feel more comfortable playing with ED-VOID tools. All right on Elite Dangerous and assets belongs to Frontier Dev Plc.*
+*Unfortunately, I am not a part of Frontier Developments Plc. All right on Elite Dangerous and assets belongs to Frontier Dev Plc.*
