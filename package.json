@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "author": "Vladimir Ishchenko",
-  "description": "Ender Observer: Overlay App for Elite Dangerous",
+  "description": "Ender O: Overlay App for Elite Dangerous",
   "scripts": {
     "vue:serve": "vue-cli-service serve",
     "vue:build": "vue-cli-service build",

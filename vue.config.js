@@ -6,7 +6,7 @@ module.exports = {
   },
   pluginOptions: {
     electronBuilder: {
-      appId: 'observer.ender.app',
+      appId: 'com.domain.app',
       nodeIntegration: true,
       externals: [ 'electron-overlay-window' ],
       mainProcessFile: 'src/process/entry.js',
