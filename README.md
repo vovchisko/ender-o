@@ -23,7 +23,7 @@ npm run serve // Compiles and hot-reloads for development
 npm run build // Compiles and minifies for production
 ```
 
-### Current State of Developmetn
+### Current State of Development
 As Elite Dangerous Odyssey is slightly broken right now - I'd keep this app as-is and wait for the fixes.
 
 **dɪsˈkleɪmə:**
